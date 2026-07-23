@@ -1,0 +1,38 @@
+{
+	"schemaVersion": 1,
+	"id": "griefer-manhunt-tools",
+	"version": "${version}",
+	"name": "Griefer Manhunt Tools",
+	"description": "This is an example description! Tell everyone what your mod is about!",
+	"authors": [
+		"Me!"
+	],
+	"contact": {
+		"homepage": "https://fabricmc.net/",
+		"sources": "https://github.com/FabricMC/fabric-example-mod"
+	},
+	"license": "CC0-1.0",
+	"icon": "assets/griefer-manhunt-tools/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"ezalex.manhunt_tools.GrieferManhuntTools"
+		],
+		"client": [
+			"ezalex.manhunt_tools.client.GrieferManhuntToolsClient"
+		]
+	},
+	"mixins": [
+		"griefer-manhunt-tools.mixins.json",
+		{
+			"config": "griefer-manhunt-tools.client.mixins.json",
+			"environment": "client"
+		}
+	],
+	"depends": {
+		"fabricloader": ">=0.19.3",
+		"minecraft": "~26.2",
+		"java": ">=25",
+		"fabric-api": "*"
+	}
+}
