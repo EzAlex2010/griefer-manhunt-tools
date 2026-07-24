@@ -10,15 +10,23 @@ import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.Commands;
+import net.minecraft.commands.arguments.ResourceArgument;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.ServerScoreboard;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.permissions.Permissions;
 import net.minecraft.world.scores.PlayerTeam;
+import net.minecraft.world.scores.Scoreboard;
 import net.minecraft.world.scores.TeamColor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
+import com.mojang.brigadier.arguments.StringArgumentType;
+import net.minecraft.commands.synchronization.SuggestionProviders;
+import net.minecraft.commands.synchronization.SingletonArgumentInfo;
+import net.minecraft.resources.Identifier;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -47,7 +55,7 @@ public class GrieferManhuntTools implements ModInitializer {
 							.then(Commands.literal("compass_update_interval").then(Commands.argument("ticks", IntegerArgumentType.integer(1)).executes(ManhuntCommands::set_compass_update_interval)))
 							.then(Commands.literal("show_team_colors").then(Commands.argument("bool", BoolArgumentType.bool()).executes(ManhuntCommands::set_show_team_colors)))
 							.then(Commands.literal("give_hunters_compass").then(Commands.argument("bool", BoolArgumentType.bool()).executes(ManhuntCommands::set_give_hunters_compass)))
-
+							.then(Commands.literal("hunter_friendly_fire").then(Commands.argument("bool", BoolArgumentType.bool()).executes(ManhuntCommands::set_hunter_friendly_fire)))
 					)
 					.then(Commands.literal("start").executes(ManhuntCommands::start_challenge))
 			);
@@ -59,6 +67,10 @@ public class GrieferManhuntTools implements ModInitializer {
 			);
 			dispatcher.register(
 					Commands.literal("leave").executes(ManhuntCommands::leave_team)
+			);
+			dispatcher.register(
+					Commands.literal("track")
+							.then(Commands.argument("player", StringArgumentType.word()).suggests(new OnlinePlayerSuggestionProvider()).executes(ManhuntCommands::track))
 			);
 		});
 
@@ -92,9 +104,19 @@ public class GrieferManhuntTools implements ModInitializer {
 				ticks++;
 				if (ticks >= UPDATE_INTERVAL) {
 					ticks = 0;
-					if (Objects.equals(ConfigManager.get().challenge, "classic")) {
-						Classic.update_compass(server);
-					}
+					Compass.update(server);
+				}
+			}
+			ServerScoreboard scoreboard = server.getScoreboard();
+			PlayerTeam runner = scoreboard.getPlayerTeam("runner");
+			PlayerTeam hunters = scoreboard.getPlayerTeam("hunter");
+			if (hunters != null && runner != null) {
+				if (ConfigManager.get().showTeamColors) {
+					runner.setColor(Optional.of(TeamColor.GREEN));
+					hunters.setColor(Optional.of(TeamColor.RED));
+				} else {
+					runner.setColor(Optional.empty());
+					hunters.setColor(Optional.empty());
 				}
 			}
 		});
@@ -113,7 +135,7 @@ public class GrieferManhuntTools implements ModInitializer {
 			PlayerTeam hunter = scoreboard.addPlayerTeam("hunter");
 			// Optional settings:
 			hunter.setColor(Optional.of(TeamColor.RED));
-			hunter.setAllowFriendlyFire(false);
+			//hunter.setAllowFriendlyFire(false);
 			hunter.setSeeFriendlyInvisibles(true);
 			GrieferManhuntTools.LOGGER.info("Created hunter team.");
 		}
@@ -123,5 +145,17 @@ public class GrieferManhuntTools implements ModInitializer {
 			runner.setColor(Optional.of(TeamColor.GREEN));
 			GrieferManhuntTools.LOGGER.info("Created runner team.");
 		}
+	}
+
+	public static ServerPlayer getRunner(MinecraftServer server) {
+		ServerPlayer runner = null;
+		for (ServerPlayer player : server.getPlayerList().getPlayers()) {
+			if (player.getTeam() != null && player.getTeam().getName().equals("runner")) {
+				runner = player;
+				return runner;
+			}
+		}
+		System.err.println("Error: No player is on the runner team!");
+		return null;
 	}
 }

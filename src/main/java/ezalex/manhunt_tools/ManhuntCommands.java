@@ -5,6 +5,7 @@ import java.nio.file.Path;
 import java.util.Objects;
 
 import com.mojang.brigadier.arguments.BoolArgumentType;
+import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
@@ -70,6 +71,19 @@ public class ManhuntCommands {
         return 1;
     }
 
+    public static int track(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+        ServerPlayer player = context.getSource().getPlayerOrException();
+        String targetName = StringArgumentType.getString(context, "player");
+        ServerPlayer target = context.getSource().getServer().getPlayerList().getPlayerByName(targetName);
+        if (target == null) {
+            context.getSource().sendFailure(Component.literal("Player not found."));
+            return 0;
+        }
+        Compass.setTarget(player.getUUID(), target.getUUID());
+        context.getSource().sendSuccess(() -> Component.literal("Now Tracking " + targetName), false);
+        return 1;
+    }
+
     public static int challenge_select(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         ServerPlayNetworking.send(
                 context.getSource().getPlayerOrException(),
@@ -107,6 +121,13 @@ public class ManhuntCommands {
     public static int set_show_team_colors(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         ConfigManager.get().showTeamColors = BoolArgumentType.getBool(context, "bool");
         GrieferManhuntTools.LOGGER.info("Set Show Team Colors to " + ConfigManager.get().showTeamColors);
+        ConfigManager.save();
+        return 1;
+    }
+
+    public static int set_hunter_friendly_fire(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+        ConfigManager.get().hunterfriendlyfire = BoolArgumentType.getBool(context, "bool");
+        GrieferManhuntTools.LOGGER.info("Set Hunter Friendly Fire to " + ConfigManager.get().hunterfriendlyfire);
         ConfigManager.save();
         return 1;
     }
