@@ -1,14 +1,12 @@
 package ezalex.manhunt_tools;
 
-import java.nio.file.Path;
-import java.util.Properties;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.nio.file.Files;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+
 import java.io.Reader;
 import java.io.Writer;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 public class ConfigManager {
     private static final Path CONFIG_PATH = Path.of("config", "griefer-manhunt-tools.json");
