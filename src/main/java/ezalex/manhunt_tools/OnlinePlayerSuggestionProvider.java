@@ -10,16 +10,14 @@ import net.minecraft.server.level.ServerPlayer;
 import java.util.concurrent.CompletableFuture;
 
 public class OnlinePlayerSuggestionProvider implements SuggestionProvider<CommandSourceStack> {
-
     @Override
-    public CompletableFuture<Suggestions> getSuggestions(
-            CommandContext<CommandSourceStack> context,
-            SuggestionsBuilder builder) {
-
+    public CompletableFuture<Suggestions> getSuggestions(CommandContext<CommandSourceStack> context, SuggestionsBuilder builder) {
+        ServerPlayer source = context.getSource().getPlayer();
         for (ServerPlayer player : context.getSource().getServer().getPlayerList().getPlayers()) {
-            builder.suggest(player.getGameProfile().name());
+            if (source != null || !player.getUUID().equals(source.getUUID())) {
+                builder.suggest(player.getGameProfile().name());
+            }
         }
-
         return builder.buildFuture();
     }
 }

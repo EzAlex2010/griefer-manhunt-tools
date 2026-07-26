@@ -8,17 +8,51 @@ import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.ServerScoreboard;
 import net.minecraft.server.level.ServerPlayer;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 
 import ezalex.manhunt_tools.challenges.Classic;
+import net.minecraft.server.permissions.Permissions;
 import net.minecraft.world.scores.PlayerTeam;
 
 public class ManhuntCommands {
+    public static void register() {
+        CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
+            dispatcher.register(
+                    Commands.literal("manhunt")
+                            .requires(source -> source.permissions().hasPermission(Permissions.COMMANDS_ADMIN))
+                            .then(Commands.literal("reset").executes(ManhuntCommands::reset_command))
+                            .then(Commands.literal("challenges").executes(ManhuntCommands::challenge_select))
+                            .then(Commands.literal("set")
+                                    .then(Commands.literal("compass_update_interval").then(Commands.argument("ticks", IntegerArgumentType.integer(1)).executes(ManhuntCommands::set_compass_update_interval)))
+                                    .then(Commands.literal("show_team_colors").then(Commands.argument("bool", BoolArgumentType.bool()).executes(ManhuntCommands::set_show_team_colors)))
+                                    .then(Commands.literal("give_hunters_compass").then(Commands.argument("bool", BoolArgumentType.bool()).executes(ManhuntCommands::set_give_hunters_compass)))
+                                    .then(Commands.literal("hunter_friendly_fire").then(Commands.argument("bool", BoolArgumentType.bool()).executes(ManhuntCommands::set_hunter_friendly_fire)))
+                            )
+                            .then(Commands.literal("start").executes(ManhuntCommands::start_challenge))
+            );
+            dispatcher.register(
+                    Commands.literal("hunter").executes(ManhuntCommands::join_hunters)
+            );
+            dispatcher.register(
+                    Commands.literal("runner").executes(ManhuntCommands::join_runner)
+            );
+            dispatcher.register(
+                    Commands.literal("leave").executes(ManhuntCommands::leave_team)
+            );
+            dispatcher.register(
+                    Commands.literal("track")
+                            .then(Commands.argument("player", StringArgumentType.word()).suggests(new OnlinePlayerSuggestionProvider()).executes(ManhuntCommands::track))
+            );
+        });
+    }
+
     public static int reset_command(CommandContext<CommandSourceStack> context) {
         Path flag = Path.of("reset.flag");
         try {
