@@ -17,7 +17,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
-import static ezalex.manhunt_tools.GrieferManhuntTools.getRunner;
+import static ezalex.manhunt_tools.Manager.getRunner;
 
 public class Compass {
     private static final Map<UUID, UUID> TRACKING = new HashMap<>();
