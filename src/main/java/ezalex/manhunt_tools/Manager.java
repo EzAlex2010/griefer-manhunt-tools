@@ -1,11 +1,13 @@
 package ezalex.manhunt_tools;
 
+import ezalex.manhunt_tools.challenges.Classic;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.ServerScoreboard;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.scores.PlayerTeam;
 import net.minecraft.world.scores.TeamColor;
 
+import java.util.Objects;
 import java.util.Optional;
 
 public class Manager {
@@ -68,6 +70,12 @@ public class Manager {
                 runner.setColor(Optional.empty());
                 hunters.setColor(Optional.empty());
             }
+        }
+    }
+
+    public static void start(MinecraftServer server) {
+        if (Objects.equals(ConfigManager.get().challenge, "classic")) {
+            Classic.start(server);
         }
     }
 }

@@ -5,5 +5,6 @@ public class Config {
     public int compassUpdateInterval = 20;
     public boolean showTeamColors = true;
     public boolean giveHuntersCompass = true;
-    public boolean hunterfriendlyfire = true;
+    public boolean hunterFriendlyFire = true;
+    public boolean challengeRunning = false;
 }

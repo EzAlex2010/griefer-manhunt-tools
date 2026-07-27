@@ -139,8 +139,8 @@ public class ManhuntCommands {
         int ticks = IntegerArgumentType.getInteger(context, "ticks");
         ConfigManager.get().compassUpdateInterval = ticks;
         GrieferManhuntTools.LOGGER.info("Set Compass update interval to " + ticks);
-        GrieferManhuntTools.UPDATE_INTERVAL = ticks;
-        GrieferManhuntTools.ticks = 0;
+        Manager.UPDATE_INTERVAL = ticks;
+        Manager.ticks = 0;
         ConfigManager.save();
         return ticks;
     }
@@ -160,8 +160,8 @@ public class ManhuntCommands {
     }
 
     public static int set_hunter_friendly_fire(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
-        ConfigManager.get().hunterfriendlyfire = BoolArgumentType.getBool(context, "bool");
-        GrieferManhuntTools.LOGGER.info("Set Hunter Friendly Fire to " + ConfigManager.get().hunterfriendlyfire);
+        ConfigManager.get().hunterFriendlyFire = BoolArgumentType.getBool(context, "bool");
+        GrieferManhuntTools.LOGGER.info("Set Hunter Friendly Fire to " + ConfigManager.get().hunterFriendlyFire);
         ConfigManager.save();
         return 1;
     }

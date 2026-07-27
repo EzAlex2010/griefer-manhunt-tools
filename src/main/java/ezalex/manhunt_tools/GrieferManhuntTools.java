@@ -3,18 +3,23 @@ package ezalex.manhunt_tools;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
+import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.ServerScoreboard;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.scores.PlayerTeam;
+import net.minecraft.world.scores.Team;
 import net.minecraft.world.scores.TeamColor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Optional;
+
+import static net.fabricmc.fabric.api.util.EventResult.PASS;
 
 
 public class GrieferManhuntTools implements ModInitializer {
@@ -52,6 +57,25 @@ public class GrieferManhuntTools implements ModInitializer {
 					LOGGER.info("Challenge set to {}", payload.challenge());
 				}
 		);
+
+		AttackEntityCallback.EVENT.register((player, world, hand, entity, hitResult) -> {
+			if (!(player instanceof ServerPlayer attacker)) {
+				return InteractionResult.PASS;
+			}
+
+			if (!(entity instanceof ServerPlayer target)) {
+				return InteractionResult.PASS;
+			}
+
+			Team attackerTeam = attacker.getTeam();
+			Team targetTeam = target.getTeam();
+
+			if (attackerTeam != null && targetTeam != null && attackerTeam.getName().equals("runner") && targetTeam.getName().equals("hunter") && !ConfigManager.get().challengeRunning) {
+				Manager.start(attacker.level().getServer());
+				return InteractionResult.SUCCESS;
+			}
+			return InteractionResult.PASS;
+		});
 
 		ServerTickEvents.END_SERVER_TICK.register(Manager::tick);
 
