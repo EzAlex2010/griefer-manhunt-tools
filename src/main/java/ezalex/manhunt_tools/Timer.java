@@ -3,6 +3,7 @@ package ezalex.manhunt_tools;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundSetActionBarTextPacket;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 
 public class Timer {
@@ -105,8 +106,12 @@ public class Timer {
     }
 
     public void show(MinecraftServer server) {
-        for (Player player : server.getPlayerList().getPlayers()) {
-            player.sendOverlayMessage(Component.literal("test")); //getFormattedTime()
+        for (ServerPlayer player : server.getPlayerList().getPlayers()) {
+            player.connection.send(
+                    new ClientboundSetActionBarTextPacket(
+                            Component.literal(getFormattedTime())
+                    )
+            );
         }
     }
 }

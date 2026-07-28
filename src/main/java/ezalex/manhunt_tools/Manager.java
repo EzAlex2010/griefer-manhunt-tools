@@ -53,7 +53,7 @@ public class Manager {
             }
         }
         teamConfigs(server.getScoreboard());
-        if (ConfigManager.get().challenge == "classic") {
+        if (Objects.equals(ConfigManager.get().challenge, "classic")) {
             Classic.tick(server);
         }
     }

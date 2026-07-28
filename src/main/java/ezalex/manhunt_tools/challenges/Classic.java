@@ -16,11 +16,6 @@ public class Classic {
     }
 
     public static void tick(MinecraftServer server) {
-        for (Player player : server.getPlayerList().getPlayers()) {
-            player.sendSystemMessage(
-                    Component.literal(stopwatch.getFormattedTime())
-            );
-        }
         stopwatch.show(server);
     }
 
