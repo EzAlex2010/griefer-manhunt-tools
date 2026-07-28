@@ -1,13 +1,11 @@
 package ezalex.manhunt_tools;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.Objects;
-
 import com.mojang.brigadier.arguments.BoolArgumentType;
-import com.mojang.brigadier.arguments.StringArgumentType;
+import com.mojang.brigadier.arguments.IntegerArgumentType;
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import ezalex.manhunt_tools.challenges.Classic;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.commands.CommandSourceStack;
@@ -16,11 +14,13 @@ import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.ServerScoreboard;
 import net.minecraft.server.level.ServerPlayer;
-import com.mojang.brigadier.arguments.IntegerArgumentType;
-
-import ezalex.manhunt_tools.challenges.Classic;
 import net.minecraft.server.permissions.Permissions;
 import net.minecraft.world.scores.PlayerTeam;
+
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Objects;
+import java.util.function.Consumer;
 
 public class ManhuntCommands {
     public static void register() {
@@ -31,10 +31,27 @@ public class ManhuntCommands {
                             .then(Commands.literal("reset").executes(ManhuntCommands::reset_command))
                             .then(Commands.literal("challenges").executes(ManhuntCommands::challenge_select))
                             .then(Commands.literal("set")
+                                    .then(boolSetting(
+                                            "show_timer",
+                                            "Show Timer",
+                                            b -> ConfigManager.get().showTimer = b)
+                                    )
+                                    .then(boolSetting(
+                                            "show_team_colors",
+                                            "Show Team Colors",
+                                            b -> ConfigManager.get().showTeamColors = b)
+                                    )
+                                    .then(boolSetting(
+                                            "give_hunters_compass",
+                                            "Give Hunters Compass",
+                                            b -> ConfigManager.get().giveHuntersCompass = b)
+                                    )
+                                    .then(boolSetting(
+                                            "hunter_friendly_fire",
+                                            "Hunter Friendly Fire",
+                                            b -> ConfigManager.get().hunterFriendlyFire = b)
+                                    )
                                     .then(Commands.literal("compass_update_interval").then(Commands.argument("ticks", IntegerArgumentType.integer(1)).executes(ManhuntCommands::set_compass_update_interval)))
-                                    .then(Commands.literal("show_team_colors").then(Commands.argument("bool", BoolArgumentType.bool()).executes(ManhuntCommands::set_show_team_colors)))
-                                    .then(Commands.literal("give_hunters_compass").then(Commands.argument("bool", BoolArgumentType.bool()).executes(ManhuntCommands::set_give_hunters_compass)))
-                                    .then(Commands.literal("hunter_friendly_fire").then(Commands.argument("bool", BoolArgumentType.bool()).executes(ManhuntCommands::set_hunter_friendly_fire)))
                             )
                             .then(Commands.literal("start").executes(ManhuntCommands::start_challenge))
             );
@@ -145,6 +162,18 @@ public class ManhuntCommands {
         return 0;
     }
 
+    private static LiteralArgumentBuilder<CommandSourceStack> boolSetting(String command, String displayName, Consumer<Boolean> setter) {
+        return Commands.literal(command)
+                .then(Commands.argument("bool", BoolArgumentType.bool())
+                        .executes(ctx -> {
+                            boolean value = BoolArgumentType.getBool(ctx, "bool");
+                            setter.accept(value);
+                            ConfigManager.save();
+                            GrieferManhuntTools.LOGGER.info(displayName + " = " + value);
+                            return 1;
+                        }));
+    }
+
     public static int set_compass_update_interval(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         int ticks = IntegerArgumentType.getInteger(context, "ticks");
         ConfigManager.get().compassUpdateInterval = ticks;
@@ -153,26 +182,5 @@ public class ManhuntCommands {
         Manager.ticks = 0;
         ConfigManager.save();
         return ticks;
-    }
-
-    public static int set_give_hunters_compass(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
-        ConfigManager.get().giveHuntersCompass = BoolArgumentType.getBool(context, "bool");
-        GrieferManhuntTools.LOGGER.info("Set Give Hunters compass to " + ConfigManager.get().giveHuntersCompass);
-        ConfigManager.save();
-        return 1;
-    }
-
-    public static int set_show_team_colors(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
-        ConfigManager.get().showTeamColors = BoolArgumentType.getBool(context, "bool");
-        GrieferManhuntTools.LOGGER.info("Set Show Team Colors to " + ConfigManager.get().showTeamColors);
-        ConfigManager.save();
-        return 1;
-    }
-
-    public static int set_hunter_friendly_fire(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
-        ConfigManager.get().hunterFriendlyFire = BoolArgumentType.getBool(context, "bool");
-        GrieferManhuntTools.LOGGER.info("Set Hunter Friendly Fire to " + ConfigManager.get().hunterFriendlyFire);
-        ConfigManager.save();
-        return 1;
     }
 }

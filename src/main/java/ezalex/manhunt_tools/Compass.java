@@ -76,6 +76,27 @@ public class Compass {
         }
     }
 
+    public static void clear(ServerPlayer player) {
+        /*for (ItemStack stack : player.getInventory().getNonEquipmentItems()) {
+            if (isTrackingCompass(stack)) {
+                stack.setCount(0);
+                return;
+            }
+        }
+        if (isTrackingCompass(player.getOffhandItem())) {
+            player.getOffhandItem().setCount(0);
+        }
+
+         */
+        player.getInventory().clearOrCountMatchingItems(
+                Compass::isTrackingCompass,
+                Integer.MAX_VALUE,    // remove all matching items
+                player.inventoryMenu.getCraftSlots()
+        );
+
+        player.containerMenu.broadcastChanges();
+    }
+
     private static void updateCompass(ItemStack stack, GlobalPos targetPos) {
         CustomData data = stack.get(DataComponents.CUSTOM_DATA);
 
@@ -155,7 +176,7 @@ public class Compass {
         }
     }
 
-    private static boolean isTrackingCompass(ItemStack stack) {
+    public static boolean isTrackingCompass(ItemStack stack) {
         CustomData data = stack.get(DataComponents.CUSTOM_DATA);
 
         return stack.is(Items.COMPASS)

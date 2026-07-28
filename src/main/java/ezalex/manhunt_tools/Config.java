@@ -7,4 +7,5 @@ public class Config {
     public boolean giveHuntersCompass = true;
     public boolean hunterFriendlyFire = true;
     public boolean challengeRunning = false;
+    public boolean showTimer = true;
 }

@@ -1,6 +1,7 @@
 package ezalex.manhunt_tools.challenges;
 
 import ezalex.manhunt_tools.Compass;
+import ezalex.manhunt_tools.ConfigManager;
 import ezalex.manhunt_tools.Timer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
@@ -16,7 +17,12 @@ public class Classic {
     }
 
     public static void tick(MinecraftServer server) {
-        stopwatch.show(server);
+        stopwatch.tick();
+        if (ConfigManager.get().showTimer) {
+            for (ServerPlayer player : server.getPlayerList().getPlayers()) {
+                stopwatch.showTo(player);
+            }
+        }
     }
 
     public static void give_items(MinecraftServer server) {

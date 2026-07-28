@@ -13,10 +13,10 @@ public class Timer {
         STOPWATCH
     }
 
-    private Mode mode;
+    private final Mode mode;
 
     private int ticks;
-    private int initialTicks;
+    private final int initialTicks;
 
     private boolean running;
     private boolean paused;
@@ -105,13 +105,11 @@ public class Timer {
         this.showOnActionBar = showOnActionBar;
     }
 
-    public void show(MinecraftServer server) {
-        for (ServerPlayer player : server.getPlayerList().getPlayers()) {
-            player.connection.send(
-                    new ClientboundSetActionBarTextPacket(
-                            Component.literal(getFormattedTime())
-                    )
-            );
-        }
+    public void showTo(ServerPlayer player) {
+        player.connection.send(
+            new ClientboundSetActionBarTextPacket(
+                Component.literal(getFormattedTime())
+            )
+        );
     }
 }
