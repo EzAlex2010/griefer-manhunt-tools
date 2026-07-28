@@ -14,21 +14,14 @@ public class Manager {
     public static int ticks = 0;
     public static int UPDATE_INTERVAL = 20;
 
-    public static void createTeams(MinecraftServer server) {
-        ServerScoreboard scoreboard = server.getScoreboard();
-
+    public static void createTeams(ServerScoreboard scoreboard) {
         if (scoreboard.getPlayerTeam("hunter") == null) {
             PlayerTeam hunter = scoreboard.addPlayerTeam("hunter");
-            // Optional settings:
-            hunter.setColor(Optional.of(TeamColor.RED));
-            //hunter.setAllowFriendlyFire(false);
             hunter.setSeeFriendlyInvisibles(true);
             GrieferManhuntTools.LOGGER.info("Created hunter team.");
         }
-
         if (scoreboard.getPlayerTeam("runner") == null) {
             PlayerTeam runner = scoreboard.addPlayerTeam("runner");
-            runner.setColor(Optional.of(TeamColor.GREEN));
             GrieferManhuntTools.LOGGER.info("Created runner team.");
         }
     }
@@ -41,7 +34,7 @@ public class Manager {
                 return runner;
             }
         }
-        System.err.println("Error: No player is on the runner team!");
+        GrieferManhuntTools.LOGGER.error("No player is on the runner team!");
         return null;
     }
 
@@ -59,7 +52,13 @@ public class Manager {
                 Compass.update(server);
             }
         }
-        ServerScoreboard scoreboard = server.getScoreboard();
+        teamConfigs(server.getScoreboard());
+        if (ConfigManager.get().challenge == "classic") {
+            Classic.tick(server);
+        }
+    }
+
+    public static void teamConfigs(ServerScoreboard scoreboard) {
         PlayerTeam runner = scoreboard.getPlayerTeam("runner");
         PlayerTeam hunters = scoreboard.getPlayerTeam("hunter");
         if (hunters != null && runner != null) {
@@ -70,6 +69,13 @@ public class Manager {
                 runner.setColor(Optional.empty());
                 hunters.setColor(Optional.empty());
             }
+            if (ConfigManager.get().hunterFriendlyFire) {
+                hunters.setAllowFriendlyFire(true);
+            } else {
+                hunters.setAllowFriendlyFire(false);
+            }
+        } else {
+            createTeams(scoreboard);
         }
     }
 

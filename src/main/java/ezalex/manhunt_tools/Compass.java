@@ -22,6 +22,7 @@ import static ezalex.manhunt_tools.Manager.getRunner;
 public class Compass {
     private static final Map<UUID, UUID> TRACKING = new HashMap<>();
     private static final Map<UUID, Map<ResourceKey<Level>, GlobalPos>> LAST_LOCATIONS = new HashMap<>();
+    private static final Map<UUID, Integer> MISSING_COMPASS_TICKS = new HashMap<>();
 
     public static void setTarget(UUID hunter, UUID target) {
         TRACKING.put(hunter, target);
@@ -29,10 +30,6 @@ public class Compass {
 
     public static UUID getTarget(UUID hunter) {
         return TRACKING.get(hunter);
-    }
-
-    public static void removeTarget(UUID hunter) {
-        TRACKING.remove(hunter);
     }
 
     public static ItemStack create(ServerPlayer target) {
@@ -49,7 +46,34 @@ public class Compass {
         ItemStack compass = new ItemStack(Items.COMPASS);
         compass.set(DataComponents.LODESTONE_TRACKER, new LodestoneTracker(Optional.of(location),false));
         compass.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
+        compass.set(DataComponents.MAX_STACK_SIZE, 1);
         return compass;
+    }
+
+    public static void give(MinecraftServer server, ServerPlayer player) {
+        if (player.getTeam() != null && player.getTeam().getName().equals("hunter")) {
+            ServerPlayer defaultTarget = getRunner(server);
+            UUID targetUUID = getTarget(player.getUUID());
+            if (targetUUID == null) {
+                if (defaultTarget == null) {
+                    return;
+                }
+                targetUUID = defaultTarget.getUUID();
+            }
+            ServerPlayer target = server.getPlayerList().getPlayer(targetUUID);
+            if (target == null) {
+                return;
+            }
+            for (ItemStack stack : player.getInventory().getNonEquipmentItems()) {
+                if (isTrackingCompass(stack)) {
+                    return;
+                }
+            }
+            if (isTrackingCompass(player.getOffhandItem())) {
+                return;
+            }
+            player.getInventory().add(create(target));
+        }
     }
 
     private static void updateCompass(ItemStack stack, GlobalPos targetPos) {
@@ -63,19 +87,26 @@ public class Compass {
         }
     }
 
-    public static void update(MinecraftServer server) {
+    public static void updateLocations(MinecraftServer server) {
         for (ServerPlayer player : server.getPlayerList().getPlayers()) {
             LAST_LOCATIONS.computeIfAbsent(player.getUUID(), uuid -> new HashMap<>()).put(
-                player.level().dimension(),
-                GlobalPos.of(
                     player.level().dimension(),
-                    player.blockPosition()
-                ));
+                    GlobalPos.of(
+                            player.level().dimension(),
+                            player.blockPosition()
+                    ));
         }
+    }
+
+    public static void update(MinecraftServer server) {
+        updateLocations(server); // Update Positions
+
+        // Find Target
 
         ServerPlayer defaultTarget = getRunner(server);
         for (ServerPlayer player : server.getPlayerList().getPlayers()) {
             if (player.getTeam() != null && player.getTeam().getName().equals("hunter")) {
+                boolean hasTrackingCompass = false;
                 UUID targetUUID = getTarget(player.getUUID());
                 if (targetUUID == null) {
                     if (defaultTarget == null) {
@@ -95,12 +126,52 @@ public class Compass {
                 if (targetPos == null) {
                     continue;
                 }
-                for (int i = 0; i < 9; i++) {
-                    updateCompass(player.getInventory().getItem(i), targetPos);
+
+                //Check Inventory
+
+                for (ItemStack stack : player.getInventory().getNonEquipmentItems()) {
+                    hasTrackingCompass = isHasTrackingCompass(hasTrackingCompass, targetPos, stack);
                 }
+
                 ItemStack offhand = player.getOffhandItem();
-                updateCompass(offhand, targetPos);
+                hasTrackingCompass = isHasTrackingCompass(hasTrackingCompass, targetPos, offhand);
+
+                // Final Logic
+
+                if (hasTrackingCompass) {
+                    MISSING_COMPASS_TICKS.remove(player.getUUID());
+                } else {
+                    int missing = MISSING_COMPASS_TICKS.getOrDefault(player.getUUID(), 0) + 1;
+                    int updatesNeeded = Math.max(1, 100 / ConfigManager.get().compassUpdateInterval);
+
+                    if (missing >= updatesNeeded) {
+                        player.getInventory().add(create(target));
+                        MISSING_COMPASS_TICKS.remove(player.getUUID());
+                    } else {
+                        MISSING_COMPASS_TICKS.put(player.getUUID(), missing);
+                    }
+                }
             }
         }
+    }
+
+    private static boolean isTrackingCompass(ItemStack stack) {
+        CustomData data = stack.get(DataComponents.CUSTOM_DATA);
+
+        return stack.is(Items.COMPASS)
+                && data != null
+                && data.copyTag().getBooleanOr("player_tracker", false);
+    }
+
+    private static boolean isHasTrackingCompass(boolean hasTrackingCompass, GlobalPos targetPos, ItemStack stack) {
+        if (isTrackingCompass(stack)) {
+            if (hasTrackingCompass) {
+                stack.setCount(0);
+            } else {
+                hasTrackingCompass = true;
+                updateCompass(stack, targetPos);
+            }
+        }
+        return hasTrackingCompass;
     }
 }

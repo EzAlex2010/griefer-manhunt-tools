@@ -71,7 +71,7 @@ public class GrieferManhuntTools implements ModInitializer {
 
 		ServerTickEvents.END_SERVER_TICK.register(Manager::tick);
 
-		ServerLifecycleEvents.SERVER_STARTED.register(Manager::createTeams);
+		//ServerLifecycleEvents.SERVER_STARTED.register(Manager::createTeams);
 	}
 
 	public static Identifier id(String path) {

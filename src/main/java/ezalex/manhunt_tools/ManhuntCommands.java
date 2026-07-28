@@ -12,6 +12,7 @@ import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
+import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.ServerScoreboard;
 import net.minecraft.server.level.ServerPlayer;
@@ -48,7 +49,10 @@ public class ManhuntCommands {
             );
             dispatcher.register(
                     Commands.literal("track")
-                            .then(Commands.argument("player", StringArgumentType.word()).suggests(new OnlinePlayerSuggestionProvider()).executes(ManhuntCommands::track))
+                            .then(Commands.argument("player", EntityArgument.player()).executes(ManhuntCommands::track))
+            );
+            dispatcher.register(
+                    Commands.literal("compass").executes(ManhuntCommands::compass)
             );
         });
     }
@@ -105,16 +109,22 @@ public class ManhuntCommands {
         return 1;
     }
 
+    public static int compass(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+        ServerPlayer player = context.getSource().getPlayerOrException();
+        Compass.give(context.getSource().getServer(), player);
+        return 1;
+    }
+
     public static int track(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         ServerPlayer player = context.getSource().getPlayerOrException();
-        String targetName = StringArgumentType.getString(context, "player");
-        ServerPlayer target = context.getSource().getServer().getPlayerList().getPlayerByName(targetName);
+        //String targetName = String.valueOf(EntityArgument.getEntity(context, "player"));
+        ServerPlayer target = (ServerPlayer) EntityArgument.getEntity(context, "player");
         if (target == null) {
             context.getSource().sendFailure(Component.literal("Player not found."));
             return 0;
         }
         Compass.setTarget(player.getUUID(), target.getUUID());
-        context.getSource().sendSuccess(() -> Component.literal("Now Tracking " + targetName), false);
+        context.getSource().sendSuccess(() -> Component.literal("Now Tracking " + target.getGameProfile().name()), false);
         return 1;
     }
 
