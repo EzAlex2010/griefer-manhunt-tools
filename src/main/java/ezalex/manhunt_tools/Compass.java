@@ -163,7 +163,7 @@ public class Compass {
                     MISSING_COMPASS_TICKS.remove(player.getUUID());
                 } else {
                     int missing = MISSING_COMPASS_TICKS.getOrDefault(player.getUUID(), 0) + 1;
-                    int updatesNeeded = Math.max(1, 100 / ConfigManager.get().compassUpdateInterval);
+                    int updatesNeeded = Math.max(1, 40 / ConfigManager.get().compassUpdateInterval);
 
                     if (missing >= updatesNeeded) {
                         player.getInventory().add(create(target));
