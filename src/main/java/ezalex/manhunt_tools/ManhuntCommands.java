@@ -6,6 +6,8 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import ezalex.manhunt_tools.challenges.Classic;
+import ezalex.manhunt_tools.networking.ConfigDataPayload;
+import ezalex.manhunt_tools.networking.OpenChallengeScreenPayload;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.commands.CommandSourceStack;
@@ -150,7 +152,14 @@ public class ManhuntCommands {
                 context.getSource().getPlayerOrException(),
                 new OpenChallengeScreenPayload()
         );
+        return 1;
+    }
 
+    public static int config(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+        ServerPlayNetworking.send(
+                context.getSource().getPlayerOrException(),
+                new ConfigDataPayload(ConfigManager.get())
+        );
         return 1;
     }
 

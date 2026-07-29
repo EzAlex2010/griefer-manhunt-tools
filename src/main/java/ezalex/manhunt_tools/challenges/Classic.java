@@ -6,7 +6,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 
 public class Classic {
-    public static Timer stopwatch = new Timer(Timer.Mode.STOPWATCH, 0, true);
+    public static Timer stopwatch = new Timer(Timer.Mode.STOPWATCH, 0);
 
     public static void start(MinecraftServer server) {
         stopwatch.start();
@@ -19,5 +19,9 @@ public class Classic {
                 stopwatch.showTo(player);
             }
         }
+    }
+
+    public static void setup(MinecraftServer server) {
+        ConfigManager.get().showTimer = false;
     }
 }

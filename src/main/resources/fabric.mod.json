@@ -3,9 +3,9 @@
 	"id": "griefer-manhunt-tools",
 	"version": "${version}",
 	"name": "Griefer Manhunt Tools",
-	"description": "This is an example description! Tell everyone what your mod is about!",
+	"description": "A mod to make setting up Manhunts as Easy as possible! \n Based of Griefer and Mike videos",
 	"authors": [
-		"Me!"
+		"EZAlex2010"
 	],
 	"contact": {
 		"homepage": "https://fabricmc.net/",
@@ -20,7 +20,8 @@
 		],
 		"client": [
 			"ezalex.manhunt_tools.client.GrieferManhuntToolsClient"
-		]
+		],
+		"modmenu": [ "ezalex.manhunt_tools.client.GrieferManhuntToolsModMenu" ]
 	},
 	"mixins": [
 		"griefer-manhunt-tools.mixins.json",

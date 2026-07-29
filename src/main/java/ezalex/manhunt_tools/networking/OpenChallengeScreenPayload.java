@@ -1,5 +1,6 @@
-package ezalex.manhunt_tools;
+package ezalex.manhunt_tools.networking;
 
+import ezalex.manhunt_tools.GrieferManhuntTools;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 

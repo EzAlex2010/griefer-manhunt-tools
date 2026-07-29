@@ -1,13 +1,14 @@
 package ezalex.manhunt_tools;
 
+import ezalex.manhunt_tools.networking.*;
 import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.permissions.Permissions;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.scores.Team;
 import org.slf4j.Logger;
@@ -34,9 +35,24 @@ public class GrieferManhuntTools implements ModInitializer {
 				OpenChallengeScreenPayload.CODEC
 		);
 
+		PayloadTypeRegistry.clientboundPlay().register(
+				ConfigDataPayload.TYPE,
+				ConfigDataPayload.CODEC
+		);
+
 		PayloadTypeRegistry.serverboundPlay().register(
 				SetChallengePayload.TYPE,
 				SetChallengePayload.CODEC
+		);
+
+		PayloadTypeRegistry.serverboundPlay().register(
+				SaveConfigPayload.TYPE,
+				SaveConfigPayload.CODEC
+		);
+
+		PayloadTypeRegistry.serverboundPlay().register(
+				RequestConfigPayload.TYPE,
+				RequestConfigPayload.CODEC
 		);
 
 		ServerPlayNetworking.registerGlobalReceiver(
@@ -47,6 +63,32 @@ public class GrieferManhuntTools implements ModInitializer {
 					ConfigManager.save();
 
 					LOGGER.info("Challenge set to {}", payload.challenge());
+				}
+		);
+
+		ServerPlayNetworking.registerGlobalReceiver(
+				SaveConfigPayload.TYPE,
+				(payload, context) -> {
+					if (!context.player().permissions().hasPermission(Permissions.COMMANDS_ADMIN)) {
+						return;
+					}
+
+					ConfigManager.set(payload.config());
+					ConfigManager.save();
+				}
+		);
+
+		ServerPlayNetworking.registerGlobalReceiver(
+				RequestConfigPayload.TYPE,
+				(payload, context) -> {
+					if (!context.player().permissions().hasPermission(Permissions.COMMANDS_ADMIN)) {
+						return;
+					}
+
+					ServerPlayNetworking.send(
+							context.player(),
+							new ConfigDataPayload(ConfigManager.get())
+					);
 				}
 		);
 
@@ -72,17 +114,13 @@ public class GrieferManhuntTools implements ModInitializer {
 			LOGGER.info("isRunner={}, isHunter={}, running={}", isRunner, isHunter, running);
 
 			if (isHunter && isRunner && !running) {
-				LOGGER.info("About to start");
 				Manager.start(attacker.level().getServer());
-				LOGGER.info("hit start");
 				return InteractionResult.SUCCESS;
 			}
 			return InteractionResult.PASS;
 		});
 
 		ServerTickEvents.END_SERVER_TICK.register(Manager::tick);
-
-		//ServerLifecycleEvents.SERVER_STARTED.register(Manager::createTeams);
 	}
 
 	public static Identifier id(String path) {

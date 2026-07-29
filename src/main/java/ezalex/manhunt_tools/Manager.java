@@ -91,14 +91,13 @@ public class Manager {
     }
 
     public static void start(MinecraftServer server) {
-        GrieferManhuntTools.LOGGER.info("Start function started");
+        GrieferManhuntTools.LOGGER.info("Starting Game");
         if (Objects.equals(ConfigManager.get().challenge, "classic")) {
             Classic.start(server);
         } else if (Objects.equals(ConfigManager.get().challenge, "netherite_assassins")) {
-            GrieferManhuntTools.LOGGER.info("selected Netherite Assassins start");
             NetheriteAssassins.start(server);
-            GrieferManhuntTools.LOGGER.info("finished netherite assassins start");
         }
-        GrieferManhuntTools.LOGGER.info("Start function finished");
+        ConfigManager.get().challengeRunning = true;
+        ConfigManager.save();
     }
 }

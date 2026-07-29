@@ -52,4 +52,9 @@ public class ConfigManager {
             GrieferManhuntTools.LOGGER.error("Failed to save config", e);
         }
     }
+
+    public static void set(Config newConfig) {
+        config = newConfig;
+        save();
+    }
 }

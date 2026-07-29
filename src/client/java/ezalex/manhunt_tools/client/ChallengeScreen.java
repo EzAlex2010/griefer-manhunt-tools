@@ -1,6 +1,6 @@
 package ezalex.manhunt_tools.client;
 
-import ezalex.manhunt_tools.SetChallengePayload;
+import ezalex.manhunt_tools.networking.SetChallengePayload;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;

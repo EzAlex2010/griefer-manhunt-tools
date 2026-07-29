@@ -21,13 +21,10 @@ public class Timer {
     private boolean running;
     private boolean paused;
 
-    private boolean showOnActionBar;
-
-    public Timer(Mode mode, int startingTicks, boolean showOnActionBar) {
+    public Timer(Mode mode, int startingTicks) {
         this.mode = mode;
         this.initialTicks = startingTicks;
         this.ticks = startingTicks;
-        this.showOnActionBar = showOnActionBar;
     }
 
     public void tick() {
@@ -95,14 +92,6 @@ public class Timer {
         }
 
         return String.format("%02d:%02d", minutes, seconds);
-    }
-
-    public boolean shouldShowOnActionBar() {
-        return showOnActionBar;
-    }
-
-    public void setShowOnActionBar(boolean showOnActionBar) {
-        this.showOnActionBar = showOnActionBar;
     }
 
     public void showTo(ServerPlayer player) {
