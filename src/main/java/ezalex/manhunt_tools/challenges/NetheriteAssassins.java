@@ -1,20 +1,19 @@
 package ezalex.manhunt_tools.challenges;
 
 import ezalex.manhunt_tools.ConfigManager;
-import ezalex.manhunt_tools.GrieferManhuntTools;
 import ezalex.manhunt_tools.Timer;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Unit;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
-import net.minecraft.world.entity.EquipmentSlot;
 
 public class NetheriteAssassins {
     public static Timer countdown = new Timer(Timer.Mode.COUNTDOWN, 144000);

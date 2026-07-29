@@ -79,7 +79,6 @@ public class ConfigScreen extends Screen {
         y = y + y_space;
 
 
-
         this.addRenderableWidget(compassIntervalBox);
         this.addRenderableWidget(showTeamColorsBox);
         this.addRenderableWidget(giveHuntersCompassBox);
@@ -87,12 +86,19 @@ public class ConfigScreen extends Screen {
         this.addRenderableWidget(showTimerBox);
         this.addRenderableWidget(
                 Button.builder(
-                        Component.literal("Save & Close"),
+                        Component.literal("Save"),
                         button -> {
                             save();
+                        }
+                ).bounds(this.width / 2 - 140, this.height - 30, 120, 20).build()
+        );
+        this.addRenderableWidget(
+                Button.builder(
+                        Component.literal("Close"),
+                        button -> {
                             this.onClose();
                         }
-                ).bounds(this.width / 2 - 60, this.height - 30, 120, 20).build()
+                ).bounds(this.width / 2 + 40, this.height - 30, 120, 20).build()
         );
     }
 

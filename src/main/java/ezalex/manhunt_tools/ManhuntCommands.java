@@ -31,7 +31,7 @@ public class ManhuntCommands {
                     Commands.literal("manhunt")
                             .requires(source -> source.permissions().hasPermission(Permissions.COMMANDS_ADMIN))
                             .then(Commands.literal("reset").executes(ManhuntCommands::reset_command))
-                            .then(Commands.literal("challenges").executes(ManhuntCommands::challenge_select))
+                            .then(Commands.literal("config").executes(ManhuntCommands::config))
                             .then(Commands.literal("set")
                                     .then(boolSetting(
                                             "show_timer",
