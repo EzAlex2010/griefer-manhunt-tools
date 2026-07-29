@@ -16,9 +16,10 @@ import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
 
 public class NetheriteAssassins {
-    public static Timer countdown = new Timer(Timer.Mode.COUNTDOWN, 144000);
+    public static Timer countdown;
 
     public static void start(MinecraftServer server) {
+        countdown = new Timer(Timer.Mode.COUNTDOWN, ConfigManager.get().timerLength);
         countdown.start();
         give_items(server);
     }

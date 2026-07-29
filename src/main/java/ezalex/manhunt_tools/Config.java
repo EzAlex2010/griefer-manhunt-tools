@@ -10,6 +10,7 @@ public class Config {
     public boolean hunterFriendlyFire = true;
     public boolean challengeRunning = false; // shouldn't even be in the config
     public boolean showTimer = true;
+    public int timerLength = 144000;
 
     public void write(RegistryFriendlyByteBuf buf) {
         buf.writeUtf(challenge);
@@ -18,6 +19,7 @@ public class Config {
         buf.writeBoolean(giveHuntersCompass);
         buf.writeBoolean(hunterFriendlyFire);
         buf.writeBoolean(showTimer);
+        buf.writeInt(timerLength);
     }
 
     public static Config read(RegistryFriendlyByteBuf buf) {
@@ -29,6 +31,7 @@ public class Config {
         config.giveHuntersCompass = buf.readBoolean();
         config.hunterFriendlyFire = buf.readBoolean();
         config.showTimer = buf.readBoolean();
+        config.timerLength = buf.readInt();
 
         return config;
     }

@@ -2,6 +2,7 @@ package ezalex.manhunt_tools.client;
 
 import ezalex.manhunt_tools.networking.SetChallengePayload;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
@@ -94,6 +95,11 @@ public class ChallengeScreen extends Screen {
                         button -> this.onClose()
                 ).bounds(this.width / 2 - 60, this.height - 30, 120, 20).build()
         );
+    }
+
+    @Override
+    public void onClose() {
+        Minecraft.getInstance().setScreenAndShow(new ConfigScreen(ServerConfigCopy.parentScreen));
     }
 
     @Override

@@ -22,9 +22,9 @@ public class GrieferManhuntToolsClient implements ClientModInitializer{
 	public void onInitializeClient() {
 		// This entrypoint is suitable for setting up client-specific logic, such as rendering.
 		ClientTickEvents.END_CLIENT_TICK.register(client -> {
-			while (this.openChallengeScreen.consumeClick()) {
+			while (this.openConfigScreen.consumeClick()) {
 				Minecraft.getInstance().setScreenAndShow(
-						new ChallengeScreen()
+						new LoadingConfigScreen(null)
 				);
 			}
 		});
@@ -52,9 +52,9 @@ public class GrieferManhuntToolsClient implements ClientModInitializer{
 			)
 	);
 
-	KeyMapping openChallengeScreen = KeyMappingHelper.registerKeyMapping(
+	KeyMapping openConfigScreen = KeyMappingHelper.registerKeyMapping(
 			new KeyMapping(
-					"key.griefer-manhunt-tools.open_challenge",
+					"key.griefer-manhunt-tools.open_config_screen",
 					InputConstants.Type.KEYSYM,
 					GLFW.GLFW_KEY_P,
 					this.CATEGORY

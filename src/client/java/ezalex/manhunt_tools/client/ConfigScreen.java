@@ -35,9 +35,21 @@ public class ConfigScreen extends Screen {
         int y = 30;
         int y_space = 20;
 
+        this.addRenderableWidget(
+                Button.builder(
+                        Component.literal("Select Challenge"),
+                        button -> {
+                            save();
+                            Minecraft.getInstance().setScreenAndShow(new ChallengeScreen());
+                        }
+                ).bounds(this.width / 2 - 60, y, 120, 20).build()
+        );
+
+        y = y + 25;
+
         compassIntervalBox = new EditBox(
                 this.font,
-                (this.width / 2) - 10,
+                (this.width / 2),
                 y,
                 60,
                 20,
