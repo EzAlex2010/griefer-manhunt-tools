@@ -51,19 +51,30 @@ public class GrieferManhuntTools implements ModInitializer {
 		);
 
 		AttackEntityCallback.EVENT.register((player, world, hand, entity, hitResult) -> {
+			LOGGER.info("Attack callback fired");
 			if (!(player instanceof ServerPlayer attacker)) {
+				LOGGER.info("Not a ServerPlayer attacker");
 				return InteractionResult.PASS;
 			}
 
 			if (!(entity instanceof ServerPlayer target)) {
+				LOGGER.info("Target is not a ServerPlayer");
 				return InteractionResult.PASS;
 			}
 
 			Team attackerTeam = attacker.getTeam();
 			Team targetTeam = target.getTeam();
 
-			if (attackerTeam != null && targetTeam != null && attackerTeam.getName().equals("runner") && targetTeam.getName().equals("hunter") && !ConfigManager.get().challengeRunning) {
+			boolean isRunner = attackerTeam != null && attackerTeam.getName().equals("runner");
+			boolean isHunter = targetTeam != null && targetTeam.getName().equals("hunter");
+			boolean running = ConfigManager.get().challengeRunning;
+
+			LOGGER.info("isRunner={}, isHunter={}, running={}", isRunner, isHunter, running);
+
+			if (isHunter && isRunner && !running) {
+				LOGGER.info("About to start");
 				Manager.start(attacker.level().getServer());
+				LOGGER.info("hit start");
 				return InteractionResult.SUCCESS;
 			}
 			return InteractionResult.PASS;

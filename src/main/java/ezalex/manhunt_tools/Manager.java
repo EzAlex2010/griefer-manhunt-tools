@@ -1,6 +1,7 @@
 package ezalex.manhunt_tools;
 
 import ezalex.manhunt_tools.challenges.Classic;
+import ezalex.manhunt_tools.challenges.NetheriteAssassins;
 import net.minecraft.commands.arguments.ResourceKeyArgument;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
@@ -63,6 +64,8 @@ public class Manager {
         teamConfigs(server.getScoreboard());
         if (Objects.equals(ConfigManager.get().challenge, "classic")) {
             Classic.tick(server);
+        } else if (Objects.equals(ConfigManager.get().challenge, "netherite_assassins")) {
+            NetheriteAssassins.tick(server);
         }
     }
 
@@ -88,8 +91,14 @@ public class Manager {
     }
 
     public static void start(MinecraftServer server) {
+        GrieferManhuntTools.LOGGER.info("Start function started");
         if (Objects.equals(ConfigManager.get().challenge, "classic")) {
             Classic.start(server);
+        } else if (Objects.equals(ConfigManager.get().challenge, "netherite_assassins")) {
+            GrieferManhuntTools.LOGGER.info("selected Netherite Assassins start");
+            NetheriteAssassins.start(server);
+            GrieferManhuntTools.LOGGER.info("finished netherite assassins start");
         }
+        GrieferManhuntTools.LOGGER.info("Start function finished");
     }
 }
