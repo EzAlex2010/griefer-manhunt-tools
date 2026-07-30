@@ -135,7 +135,7 @@ public class Timer {
             color = 0xFFFFFF;
         }
 
-        return Component.literal(getFormattedTime()).withStyle(style -> style.withColor(color));
+        return Component.literal(getFormattedTime()).withStyle(style -> style.withColor(color).withBold(true));
     }
 
     public void showTo(ServerPlayer player) {

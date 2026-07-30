@@ -27,6 +27,7 @@ public class ConfigScreen extends Screen {
     private Checkbox giveHuntersCompassBox;
     private Checkbox hunterFriendlyFireBox;
     private Checkbox showTimerBox;
+    private EditBox TimeBox;
 
     @Override
     protected void init() {
@@ -90,19 +91,33 @@ public class ConfigScreen extends Screen {
 
         y = y + y_space;
 
+        TimeBox = new EditBox(
+                this.font,
+                (this.width / 2),
+                y,
+                60,
+                20,
+                Component.literal("Compass Interval")
+        );
+
+        TimeBox.setValue(
+                Integer.toString(config.timerLength)
+        );
+
 
         this.addRenderableWidget(compassIntervalBox);
         this.addRenderableWidget(showTeamColorsBox);
         this.addRenderableWidget(giveHuntersCompassBox);
         this.addRenderableWidget(hunterFriendlyFireBox);
         this.addRenderableWidget(showTimerBox);
+        this.addRenderableWidget(TimeBox);
         this.addRenderableWidget(
                 Button.builder(
                         Component.literal("Save"),
                         button -> {
                             save();
                         }
-                ).bounds(this.width / 2 - 140, this.height - 30, 120, 20).build()
+                ).bounds(this.width / 2 - 120, this.height - 30, 120, 20).build()
         );
         this.addRenderableWidget(
                 Button.builder(
@@ -110,7 +125,7 @@ public class ConfigScreen extends Screen {
                         button -> {
                             this.onClose();
                         }
-                ).bounds(this.width / 2 + 40, this.height - 30, 120, 20).build()
+                ).bounds(this.width / 2 + 20, this.height - 30, 120, 20).build()
         );
     }
 
@@ -139,6 +154,7 @@ public class ConfigScreen extends Screen {
 
     private void save() {
         int interval;
+        int time;
 
         try {
             interval = Integer.parseInt(compassIntervalBox.getValue());
@@ -146,11 +162,18 @@ public class ConfigScreen extends Screen {
             interval = 20;
         }
 
+        try {
+            time = Integer.parseInt(TimeBox.getValue());
+        } catch (NumberFormatException e) {
+            time = 720;
+        }
+
         config.compassUpdateInterval = interval;
         config.showTeamColors = showTeamColorsBox.selected();
         config.giveHuntersCompass = giveHuntersCompassBox.selected();
         config.hunterFriendlyFire = hunterFriendlyFireBox.selected();
         config.showTimer = showTimerBox.selected();
+        config.timerLength = time;
 
         ClientPlayNetworking.send(new SaveConfigPayload(config));
     }

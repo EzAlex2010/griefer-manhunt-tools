@@ -1,5 +1,6 @@
 package ezalex.manhunt_tools.client;
 
+import ezalex.manhunt_tools.GrieferManhuntTools;
 import ezalex.manhunt_tools.networking.SetChallengePayload;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.Minecraft;
@@ -25,9 +26,7 @@ public class ChallengeScreen extends Screen {
                 Button.builder(
                         Component.literal("Classic"),
                         button -> {
-                            ClientPlayNetworking.send(
-                                    new SetChallengePayload("classic")
-                            );
+                            ServerConfigCopy.get().challenge = "classic";
                             this.onClose();
                         }
                 ).bounds(this.width / 2 - 60, y, 120, 20).build()
@@ -39,9 +38,7 @@ public class ChallengeScreen extends Screen {
                 Button.builder(
                         Component.literal("Tank vs Assassins"),
                         button -> {
-                            ClientPlayNetworking.send(
-                                    new SetChallengePayload("tva")
-                            );
+                            ServerConfigCopy.get().challenge = "tva";
                             this.onClose();
                         }
                 ).bounds(this.width / 2 - 60, y, 120, 20).build()
@@ -53,9 +50,7 @@ public class ChallengeScreen extends Screen {
                 Button.builder(
                         Component.literal("Netherite Assassins"),
                         button -> {
-                            ClientPlayNetworking.send(
-                                    new SetChallengePayload("netherite_assassins")
-                            );
+                            ServerConfigCopy.get().challenge = "netherite_assassins";
                             this.onClose();
                         }
                 ).bounds(this.width / 2 - 60, y, 120, 20).build()
@@ -67,9 +62,7 @@ public class ChallengeScreen extends Screen {
                 Button.builder(
                         Component.literal("Manhunt Tag"),
                         button -> {
-                            ClientPlayNetworking.send(
-                                    new SetChallengePayload("tag")
-                            );
+                            ServerConfigCopy.get().challenge = "tag";
                             this.onClose();
                         }
                 ).bounds(this.width / 2 - 60, y, 120, 20).build()
@@ -81,9 +74,7 @@ public class ChallengeScreen extends Screen {
                 Button.builder(
                         Component.literal("Time Challenge"),
                         button -> {
-                            ClientPlayNetworking.send(
-                                    new SetChallengePayload("timed")
-                            );
+                            ServerConfigCopy.get().challenge = "timed";
                             this.onClose();
                         }
                 ).bounds(this.width / 2 - 60, y, 120, 20).build()
@@ -91,7 +82,7 @@ public class ChallengeScreen extends Screen {
 
         this.addRenderableWidget(
                 Button.builder(
-                        Component.literal("Close"),
+                        Component.literal("Back"),
                         button -> this.onClose()
                 ).bounds(this.width / 2 - 60, this.height - 30, 120, 20).build()
         );

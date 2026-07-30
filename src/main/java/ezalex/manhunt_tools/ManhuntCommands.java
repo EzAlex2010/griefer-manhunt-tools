@@ -32,6 +32,7 @@ public class ManhuntCommands {
                             .requires(source -> source.permissions().hasPermission(Permissions.COMMANDS_ADMIN))
                             .then(Commands.literal("reset").executes(ManhuntCommands::reset_command))
                             .then(Commands.literal("config").executes(ManhuntCommands::config))
+                            .then(Commands.literal("remove_runner").executes(ManhuntCommands::clear_runner))
                             .then(Commands.literal("set")
                                     .then(boolSetting(
                                             "show_timer",
@@ -117,6 +118,17 @@ public class ManhuntCommands {
         }
         scoreboard.addPlayerToTeam(player.getScoreboardName(), runner);
         context.getSource().sendSuccess(() -> Component.literal("You are now the runner."), false);
+        return 1;
+    }
+
+    public static int clear_runner(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+        ServerScoreboard scoreboard = context.getSource().getServer().getScoreboard();
+        PlayerTeam runner = scoreboard.getPlayerTeam("runner");
+        if (runner == null) {
+            context.getSource().sendFailure(Component.literal("The runner team does not exist."));
+            return 0;
+        }
+        runner.getPlayers().clear();
         return 1;
     }
 

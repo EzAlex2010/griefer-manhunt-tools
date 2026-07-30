@@ -106,7 +106,7 @@ public class GrieferManhuntTools implements ModInitializer {
 
 			boolean isRunner = attackerTeam != null && attackerTeam.getName().equals("runner");
 			boolean isHunter = targetTeam != null && targetTeam.getName().equals("hunter");
-			boolean running = ConfigManager.get().challengeRunning;
+			boolean running = Manager.challengeRunning;
 
 			//LOGGER.info("isRunner={}, isHunter={}, running={}", isRunner, isHunter, running);
 

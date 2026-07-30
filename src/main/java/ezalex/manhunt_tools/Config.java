@@ -3,14 +3,13 @@ package ezalex.manhunt_tools;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 
 public class Config {
-    public String challenge = "classic"; //configured elsewhere
+    public String challenge = "classic";
     public int compassUpdateInterval = 20;
     public boolean showTeamColors = true;
     public boolean giveHuntersCompass = true;
     public boolean hunterFriendlyFire = true;
-    public boolean challengeRunning = false; // shouldn't even be in the config
     public boolean showTimer = true;
-    public int timerLength = 144000;
+    public int timerLength = 7200;
 
     public void write(RegistryFriendlyByteBuf buf) {
         buf.writeUtf(challenge);

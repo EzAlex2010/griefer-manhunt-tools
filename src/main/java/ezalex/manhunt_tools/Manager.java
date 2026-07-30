@@ -14,6 +14,7 @@ import java.util.Optional;
 public class Manager {
     public static int ticks = 0;
     public static int UPDATE_INTERVAL = 20;
+    public static boolean challengeRunning = false;
 
     public static void createTeams(ServerScoreboard scoreboard) {
         if (scoreboard.getPlayerTeam("hunter") == null) {
@@ -58,10 +59,12 @@ public class Manager {
             }
         }
         teamConfigs(server.getScoreboard());
-        if (Objects.equals(ConfigManager.get().challenge, "classic")) {
-            Classic.tick(server);
-        } else if (Objects.equals(ConfigManager.get().challenge, "netherite_assassins")) {
-            NetheriteAssassins.tick(server);
+        if (challengeRunning) {
+            if (Objects.equals(ConfigManager.get().challenge, "classic")) {
+                Classic.tick(server);
+            } else if (Objects.equals(ConfigManager.get().challenge, "netherite_assassins")) {
+                NetheriteAssassins.tick(server);
+            }
         }
     }
 
@@ -93,7 +96,7 @@ public class Manager {
         } else if (Objects.equals(ConfigManager.get().challenge, "netherite_assassins")) {
             NetheriteAssassins.start(server);
         }
-        ConfigManager.get().challengeRunning = true;
+        challengeRunning = true;
         ConfigManager.save();
     }
 }

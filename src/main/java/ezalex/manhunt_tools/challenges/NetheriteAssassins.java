@@ -3,6 +3,7 @@ package ezalex.manhunt_tools.challenges;
 import ezalex.manhunt_tools.ConfigManager;
 import ezalex.manhunt_tools.Timer;
 import net.minecraft.core.Holder;
+import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
@@ -19,7 +20,7 @@ public class NetheriteAssassins {
     public static Timer countdown;
 
     public static void start(MinecraftServer server) {
-        countdown = new Timer(Timer.Mode.COUNTDOWN, ConfigManager.get().timerLength);
+        countdown = new Timer(Timer.Mode.COUNTDOWN, ConfigManager.get().timerLength * 20);
         countdown.start();
         give_items(server);
     }
@@ -42,19 +43,30 @@ public class NetheriteAssassins {
         Holder<Enchantment> binding = server.registryAccess()
                 .lookupOrThrow(net.minecraft.core.registries.Registries.ENCHANTMENT)
                 .getOrThrow(Enchantments.BINDING_CURSE);
+        Holder<Enchantment> vanishing = server.registryAccess()
+                .lookupOrThrow(net.minecraft.core.registries.Registries.ENCHANTMENT)
+                .getOrThrow(Enchantments.VANISHING_CURSE);
         ItemEnchantments.Mutable enchants = new ItemEnchantments.Mutable(ItemEnchantments.EMPTY);
         enchants.set(binding, 1);
+        enchants.set(vanishing, 1);
 
         stack.set(DataComponents.ENCHANTMENTS, enchants.toImmutable());
 
         return stack;
     }
 
-    private static ItemStack createSword() {
+    private static ItemStack createSword(MinecraftServer server) {
         ItemStack stack = new ItemStack(Items.NETHERITE_SWORD);
 
         // Unbreakable
         stack.set(DataComponents.UNBREAKABLE, Unit.INSTANCE);
+
+        Holder<Enchantment> vanishing = server.registryAccess()
+                .lookupOrThrow(net.minecraft.core.registries.Registries.ENCHANTMENT)
+                .getOrThrow(Enchantments.VANISHING_CURSE);
+        ItemEnchantments.Mutable enchants = new ItemEnchantments.Mutable(ItemEnchantments.EMPTY);
+        enchants.set(vanishing, 1);
+        stack.set(DataComponents.ENCHANTMENTS, enchants.toImmutable());
 
         return stack;
     }
@@ -68,7 +80,7 @@ public class NetheriteAssassins {
                 player.setItemSlot(EquipmentSlot.CHEST, createArmor(Items.NETHERITE_CHESTPLATE, server));
                 player.setItemSlot(EquipmentSlot.HEAD, createArmor(Items.NETHERITE_HELMET, server));
                 // Sword
-                player.getInventory().add(createSword());
+                player.getInventory().add(createSword(server));
             }
         }
     }
