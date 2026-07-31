@@ -16,13 +16,14 @@ import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
 
+import java.util.Set;
+
 public class NetheriteAssassins {
     public static Timer countdown;
 
     public static void start(MinecraftServer server) {
         countdown = new Timer(Timer.Mode.COUNTDOWN, ConfigManager.get().timerLength * 20);
         countdown.start();
-        give_items(server);
     }
 
     public static void tick(MinecraftServer server) {
@@ -75,12 +76,12 @@ public class NetheriteAssassins {
         for (ServerPlayer player : server.getPlayerList().getPlayers()) {
             if (player.getTeam() != null && player.getTeam().getName().equals("hunter")) {
                 // Armor
-                player.setItemSlot(EquipmentSlot.FEET, createArmor(Items.NETHERITE_BOOTS, server));
-                player.setItemSlot(EquipmentSlot.LEGS, createArmor(Items.NETHERITE_LEGGINGS, server));
-                player.setItemSlot(EquipmentSlot.CHEST, createArmor(Items.NETHERITE_CHESTPLATE, server));
-                player.setItemSlot(EquipmentSlot.HEAD, createArmor(Items.NETHERITE_HELMET, server));
+                if (player.getItemBySlot(EquipmentSlot.FEET).getItem() != Items.NETHERITE_BOOTS) player.setItemSlot(EquipmentSlot.FEET, createArmor(Items.NETHERITE_BOOTS, server));
+                if (player.getItemBySlot(EquipmentSlot.LEGS).getItem() != Items.NETHERITE_LEGGINGS) player.setItemSlot(EquipmentSlot.LEGS, createArmor(Items.NETHERITE_LEGGINGS, server));
+                if (player.getItemBySlot(EquipmentSlot.CHEST).getItem() != Items.NETHERITE_CHESTPLATE) player.setItemSlot(EquipmentSlot.CHEST, createArmor(Items.NETHERITE_CHESTPLATE, server));
+                if (player.getItemBySlot(EquipmentSlot.HEAD).getItem() != Items.NETHERITE_HELMET)player.setItemSlot(EquipmentSlot.HEAD, createArmor(Items.NETHERITE_HELMET, server));
                 // Sword
-                player.getInventory().add(createSword(server));
+                if (!player.getInventory().contains(createSword(server))) player.getInventory().add(createSword(server));
             }
         }
     }

@@ -60,10 +60,22 @@ public class Manager {
         }
         teamConfigs(server.getScoreboard());
         if (challengeRunning) {
-            if (Objects.equals(ConfigManager.get().challenge, "classic")) {
-                Classic.tick(server);
-            } else if (Objects.equals(ConfigManager.get().challenge, "netherite_assassins")) {
-                NetheriteAssassins.tick(server);
+            switch (ConfigManager.get().challenge) {
+                case "classic": {
+                    Classic.tick(server);
+                }
+                case "netherite_assassins": {
+                    NetheriteAssassins.tick(server);
+                }
+            }
+        } else {
+            switch (ConfigManager.get().challenge) {
+                case "challenge": {
+                    break;
+                }
+                case "netherite_assassins": {
+                    NetheriteAssassins.give_items(server);
+                }
             }
         }
     }
