@@ -14,51 +14,32 @@ public class Timer {
         STOPWATCH
     }
 
-    private final Mode mode;
+    private Mode mode;
 
     private int ticks;
-    private final int initialTicks;
+    private int initialTicks;
 
-    private boolean running;
-    private boolean paused;
+    public void configureCountdown(int ticks) {
+        mode = Mode.COUNTDOWN;
+        initialTicks = ticks;
+        this.ticks = ticks;
+    }
 
-    public Timer(Mode mode, int startingTicks) {
-        this.mode = mode;
-        this.initialTicks = startingTicks;
-        this.ticks = startingTicks;
+    public void configureStopwatch() {
+        mode = Mode.STOPWATCH;
+        initialTicks = 0;
+        ticks = 0;
     }
 
     public void tick() {
-        if (!running || paused) {
-            return;
-        }
-
         switch (mode) {
             case COUNTDOWN -> {
                 if (ticks > 0) {
                     ticks--;
                 }
             }
-
             case STOPWATCH -> ticks++;
         }
-    }
-
-    public void start() {
-        running = true;
-        paused = false;
-    }
-
-    public void stop() {
-        running = false;
-    }
-
-    public void pause() {
-        paused = true;
-    }
-
-    public void resume() {
-        paused = false;
     }
 
     public void reset() {
@@ -73,12 +54,24 @@ public class Timer {
         return ticks;
     }
 
+    public int getInitialTicks() {
+        return initialTicks;
+    }
+
+    public Mode getMode() {
+        return mode;
+    }
+
     public int getSeconds() {
         return ticks / 20;
     }
 
-    public boolean isRunning() {
-        return running;
+    public void setTicks(int ticks) {
+        this.ticks = ticks;
+    }
+
+    public void setMode(Mode mode) {
+        this.mode = mode;
     }
 
     public String getFormattedTime() {

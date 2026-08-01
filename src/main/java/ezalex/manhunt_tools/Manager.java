@@ -15,6 +15,17 @@ public class Manager {
     public static int ticks = 0;
     public static int UPDATE_INTERVAL = 20;
     public static boolean challengeRunning = false;
+    public static String challenge = "classic";
+
+    private static Timer timer = new Timer();
+
+    public static Timer getTimer() {
+        return timer;
+    }
+
+    public static void setTimer(Timer newTimer) {
+        timer = newTimer;
+    }
 
     public static void createTeams(ServerScoreboard scoreboard) {
         if (scoreboard.getPlayerTeam("hunter") == null) {
@@ -60,7 +71,8 @@ public class Manager {
         }
         teamConfigs(server.getScoreboard());
         if (challengeRunning) {
-            switch (ConfigManager.get().challenge) {
+            timer.tick();
+            switch (challenge) { // I want to check the per world value here.
                 case "classic": {
                     Classic.tick(server);
                 }
@@ -103,12 +115,20 @@ public class Manager {
 
     public static void start(MinecraftServer server) {
         GrieferManhuntTools.LOGGER.info("Starting Game");
-        if (Objects.equals(ConfigManager.get().challenge, "classic")) {
+        if (Objects.equals(ConfigManager.get().challenge, "classic")) { // here i want to check the server config setting, not the per world setting
             Classic.start(server);
         } else if (Objects.equals(ConfigManager.get().challenge, "netherite_assassins")) {
             NetheriteAssassins.start(server);
         }
         challengeRunning = true;
         ConfigManager.save();
+    }
+
+    public static boolean isRunner(ServerPlayer player) {
+        return player.getTeam() != null && player.getTeam().getName().equals("runner");
+    }
+
+    public static boolean isHunter(ServerPlayer player) {
+        return player.getTeam() != null && player.getTeam().getName().equals("hunter");
     }
 }

@@ -2,6 +2,7 @@ package ezalex.manhunt_tools;
 
 import ezalex.manhunt_tools.networking.*;
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
@@ -118,6 +119,10 @@ public class GrieferManhuntTools implements ModInitializer {
 		});
 
 		ServerTickEvents.END_SERVER_TICK.register(Manager::tick);
+
+		ServerLifecycleEvents.SERVER_STOPPING.register(server -> {
+			Manager.save(server);
+		});
 	}
 
 	public static Identifier id(String path) {
