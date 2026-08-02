@@ -101,7 +101,7 @@ public class ConfigScreen extends Screen {
         );
 
         TimeBox.setValue(
-                Integer.toString(config.timerLength)
+                Long.toString(config.timerLength)
         );
 
 
@@ -154,7 +154,7 @@ public class ConfigScreen extends Screen {
 
     private void save() {
         int interval;
-        int time;
+        Long time;
 
         try {
             interval = Integer.parseInt(compassIntervalBox.getValue());
@@ -163,9 +163,9 @@ public class ConfigScreen extends Screen {
         }
 
         try {
-            time = Integer.parseInt(TimeBox.getValue());
+            time = Long.parseLong(TimeBox.getValue());
         } catch (NumberFormatException e) {
-            time = 720;
+            time = 720L;
         }
 
         config.compassUpdateInterval = interval;

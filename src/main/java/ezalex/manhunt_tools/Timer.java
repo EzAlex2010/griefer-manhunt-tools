@@ -14,12 +14,12 @@ public class Timer {
         STOPWATCH
     }
 
-    private Mode mode;
+    private Mode mode = Mode.STOPWATCH;
 
-    private int ticks;
-    private int initialTicks;
+    private Long ticks = 0L;
+    private Long initialTicks = 0L;
 
-    public void configureCountdown(int ticks) {
+    public void configureCountdown(Long ticks) {
         mode = Mode.COUNTDOWN;
         initialTicks = ticks;
         this.ticks = ticks;
@@ -27,8 +27,8 @@ public class Timer {
 
     public void configureStopwatch() {
         mode = Mode.STOPWATCH;
-        initialTicks = 0;
-        ticks = 0;
+        initialTicks = 0L;
+        ticks = 0L;
     }
 
     public void tick() {
@@ -50,11 +50,11 @@ public class Timer {
         return mode == Mode.COUNTDOWN && ticks <= 0;
     }
 
-    public int getTicks() {
+    public Long getTicks() {
         return ticks;
     }
 
-    public int getInitialTicks() {
+    public Long getInitialTicks() {
         return initialTicks;
     }
 
@@ -62,11 +62,11 @@ public class Timer {
         return mode;
     }
 
-    public int getSeconds() {
+    public Long getSeconds() {
         return ticks / 20;
     }
 
-    public void setTicks(int ticks) {
+    public void setTicks(Long ticks) {
         this.ticks = ticks;
     }
 
@@ -75,7 +75,7 @@ public class Timer {
     }
 
     public String getFormattedTime() {
-        int totalSeconds = ticks / 20;
+        int totalSeconds = Math.toIntExact((ticks / 20));
 
         int hours = totalSeconds / 3600;
         int minutes = (totalSeconds % 3600) / 60;
@@ -111,7 +111,7 @@ public class Timer {
 
         if (mode == Mode.COUNTDOWN) {
             double percent = (double) ticks / initialTicks;
-            int seconds = getSeconds();
+            int seconds = Math.toIntExact(getSeconds());
 
             if (seconds <= 10) {
                 color = (ticks / 10) % 2 == 0

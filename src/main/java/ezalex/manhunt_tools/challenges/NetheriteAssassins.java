@@ -23,11 +23,13 @@ public class NetheriteAssassins {
     public static Timer countdown;
 
     public static void start(MinecraftServer server) {
-        Manager.getTimer().configureCountdown(ConfigManager.get().timerLength * 20);
+        Manager.getTimer().configureCountdown((ConfigManager.get().timerLength * 20L));
     }
 
     public static void tick(MinecraftServer server) {
+        if (Manager.getTimer().isFinished()) {
 
+        }
     }
 
     private static ItemStack createArmor(Item item, MinecraftServer server) {

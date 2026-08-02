@@ -9,7 +9,7 @@ public class Config {
     public boolean giveHuntersCompass = true;
     public boolean hunterFriendlyFire = true;
     public boolean showTimer = true;
-    public int timerLength = 7200;
+    public Long timerLength = 7200L;
 
     public void write(RegistryFriendlyByteBuf buf) {
         buf.writeUtf(challenge);
@@ -18,7 +18,7 @@ public class Config {
         buf.writeBoolean(giveHuntersCompass);
         buf.writeBoolean(hunterFriendlyFire);
         buf.writeBoolean(showTimer);
-        buf.writeInt(timerLength);
+        buf.writeLong(timerLength);
     }
 
     public static Config read(RegistryFriendlyByteBuf buf) {
@@ -30,7 +30,7 @@ public class Config {
         config.giveHuntersCompass = buf.readBoolean();
         config.hunterFriendlyFire = buf.readBoolean();
         config.showTimer = buf.readBoolean();
-        config.timerLength = buf.readInt();
+        config.timerLength = buf.readLong();
 
         return config;
     }

@@ -2,12 +2,23 @@ package ezalex.manhunt_tools;
 
 import ezalex.manhunt_tools.challenges.Classic;
 import ezalex.manhunt_tools.challenges.NetheriteAssassins;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.game.ClientboundSetActionBarTextPacket;
+import net.minecraft.network.protocol.game.ClientboundSetTitleTextPacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.ServerScoreboard;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.dimension.end.EnderDragonFight;
 import net.minecraft.world.scores.PlayerTeam;
 import net.minecraft.world.scores.TeamColor;
+import net.minecraft.ChatFormatting;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -25,6 +36,16 @@ public class Manager {
 
     public static void setTimer(Timer newTimer) {
         timer = newTimer;
+    }
+
+    public static void save(MinecraftServer server) {
+        Path file = server.getWorldPath(net.minecraft.world.level.storage.LevelResource.ROOT).resolve("challengeData.txt");
+        String data = (challengeRunning ? "1" : "0") + "|" + (timer.getMode().toString()) + "|" + timer.getTicks() + "|" + timer.getInitialTicks();
+        try {
+            Files.writeString(file, data);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public static void createTeams(ServerScoreboard scoreboard) {
@@ -51,13 +72,39 @@ public class Manager {
         return null;
     }
 
-    public static void load() {
+    public static void load(MinecraftServer server) {
         ConfigManager.load();
         UPDATE_INTERVAL = ConfigManager.get().compassUpdateInterval;
+        Path file = server.getWorldPath(net.minecraft.world.level.storage.LevelResource.ROOT).resolve("challengeData.txt");
+        if (Files.exists(file)) {
+            String data;
+            try {
+                data = Files.readString(file);
+            } catch (IOException e) {
+                GrieferManhuntTools.LOGGER.error("Failed to load challenge data", e);
+                return;
+            }
+            String[] parts = data.split("\\|");
 
+            challengeRunning = parts[0].equals("1");
+            if (parts[1].equals(Timer.Mode.COUNTDOWN.toString())) {
+                timer.configureCountdown(Long.parseLong(parts[3]));
+            } else {
+                timer.configureStopwatch();
+            }
+            timer.setTicks(Long.parseLong(parts[2]));
+        }
     }
 
     public static void tick(MinecraftServer server) {
+        ServerLevel end = server.getLevel(Level.END);
+        if (end != null) {
+            EnderDragonFight fight = end.getDragonFight();
+            EnderDragon dragon = end.getDragons().getFirst();
+            if (!dragon.isAlive()) {
+                runnerWin(server);
+            }
+        }
         if (ConfigManager.get().giveHuntersCompass) {
             ticks++;
             if (ticks >= UPDATE_INTERVAL) {
@@ -72,7 +119,12 @@ public class Manager {
         teamConfigs(server.getScoreboard());
         if (challengeRunning) {
             timer.tick();
-            switch (challenge) { // I want to check the per world value here.
+            if (ConfigManager.get().showTimer) {
+                for (ServerPlayer player : server.getPlayerList().getPlayers()) {
+                    timer.showTo(player);
+                }
+            }
+            switch (challenge) {
                 case "classic": {
                     Classic.tick(server);
                 }
@@ -115,13 +167,14 @@ public class Manager {
 
     public static void start(MinecraftServer server) {
         GrieferManhuntTools.LOGGER.info("Starting Game");
-        if (Objects.equals(ConfigManager.get().challenge, "classic")) { // here i want to check the server config setting, not the per world setting
+        challenge = ConfigManager.get().challenge;
+        if (Objects.equals(challenge, "classic")) { // here i want to check the server config setting, not the per world setting
             Classic.start(server);
-        } else if (Objects.equals(ConfigManager.get().challenge, "netherite_assassins")) {
+        } else if (Objects.equals(challenge, "netherite_assassins")) {
             NetheriteAssassins.start(server);
         }
         challengeRunning = true;
-        ConfigManager.save();
+        save(server);
     }
 
     public static boolean isRunner(ServerPlayer player) {
@@ -130,5 +183,16 @@ public class Manager {
 
     public static boolean isHunter(ServerPlayer player) {
         return player.getTeam() != null && player.getTeam().getName().equals("hunter");
+    }
+
+    public static void runnerWin(MinecraftServer server) {
+        GrieferManhuntTools.LOGGER.info("Runner Win");
+        for (ServerPlayer player : server.getPlayerList().getPlayers()) {
+            player.connection.send(
+                    new ClientboundSetTitleTextPacket(
+                            Component.literal("Runner Wins!").withStyle(style -> style.withColor(ChatFormatting.GREEN).withBold(true))
+                    )
+            );
+        }
     }
 }

@@ -2,15 +2,18 @@ package ezalex.manhunt_tools;
 
 import ezalex.manhunt_tools.networking.*;
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.resources.Identifier;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.permissions.Permissions;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.scores.Team;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +32,7 @@ public class GrieferManhuntTools implements ModInitializer {
 	public void onInitialize() {
 		ManhuntCommands.register();
 
-		Manager.load();
+		ServerLifecycleEvents.SERVER_STARTING.register(Manager::load);
 
 		PayloadTypeRegistry.clientboundPlay().register(
 				OpenChallengeScreenPayload.TYPE,
@@ -101,17 +104,12 @@ public class GrieferManhuntTools implements ModInitializer {
 			if (!(entity instanceof ServerPlayer target)) {
 				return InteractionResult.PASS;
 			}
+			LOGGER.info("hit");
 
-			Team attackerTeam = attacker.getTeam();
-			Team targetTeam = target.getTeam();
+			LOGGER.info("isRunner={}, isHunter={}, running={}", Manager.isHunter(target), Manager.isRunner(attacker), Manager.challengeRunning);
 
-			boolean isRunner = attackerTeam != null && attackerTeam.getName().equals("runner");
-			boolean isHunter = targetTeam != null && targetTeam.getName().equals("hunter");
-			boolean running = Manager.challengeRunning;
-
-			//LOGGER.info("isRunner={}, isHunter={}, running={}", isRunner, isHunter, running);
-
-			if (isHunter && isRunner && !running) {
+			if (Manager.isHunter(target) && Manager.isRunner(attacker) && !Manager.challengeRunning) {
+				LOGGER.info("start");
 				Manager.start(attacker.level().getServer());
 				return InteractionResult.SUCCESS;
 			}
@@ -120,8 +118,24 @@ public class GrieferManhuntTools implements ModInitializer {
 
 		ServerTickEvents.END_SERVER_TICK.register(Manager::tick);
 
-		ServerLifecycleEvents.SERVER_STOPPING.register(server -> {
+		ServerLifecycleEvents.SERVER_STOPPING.register(Manager::save);
+
+		ServerLifecycleEvents.BEFORE_SAVE.register((server, flush, force) -> {
 			Manager.save(server);
+		});
+
+		LOGGER.info("Registering AFTER_DEATH callback");
+
+		ServerLivingEntityEvents.AFTER_DEATH.register((entity, damageSource) -> {
+			LOGGER.info("AFTER_DEATH");
+			if (entity instanceof EnderDragon dragon) {
+				MinecraftServer server = entity.level().getServer();
+				LOGGER.info("The Ender Dragon has been defeated!");
+				if (server != null && Manager.challengeRunning) {
+					Manager.runnerWin(server);
+				}
+
+			}
 		});
 	}
 
