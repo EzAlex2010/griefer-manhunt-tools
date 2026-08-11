@@ -3,6 +3,7 @@
   "package": "ezalex.manhunt_tools.mixin",
   "compatibilityLevel": "JAVA_25",
   "mixins": [
+    "EnderDragonDeathMixin",
     "ExampleMixin",
     "ServerPlayerMixin"
   ],

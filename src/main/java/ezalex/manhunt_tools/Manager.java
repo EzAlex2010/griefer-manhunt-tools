@@ -97,14 +97,14 @@ public class Manager {
     }
 
     public static void tick(MinecraftServer server) {
-        ServerLevel end = server.getLevel(Level.END);
-        if (end != null) {
-            EnderDragonFight fight = end.getDragonFight();
-            EnderDragon dragon = end.getDragons().getFirst();
-            if (!dragon.isAlive()) {
-                runnerWin(server);
-            }
-        }
+//        ServerLevel end = server.getLevel(Level.END);
+//        if (end != null) {
+//            EnderDragonFight fight = end.getDragonFight();
+//            EnderDragon dragon = end.getDragons().getFirst();
+//            if (!dragon.isAlive()) {
+//                runnerWin(server);
+//            }
+//        }
         if (ConfigManager.get().giveHuntersCompass) {
             ticks++;
             if (ticks >= UPDATE_INTERVAL) {
