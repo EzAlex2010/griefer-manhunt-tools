@@ -22,6 +22,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class Manager {
     public static int ticks = 0;
@@ -168,7 +169,7 @@ public class Manager {
     public static void start(MinecraftServer server) {
         GrieferManhuntTools.LOGGER.info("Starting Game");
         challenge = ConfigManager.get().challenge;
-        if (Objects.equals(challenge, "classic")) { // here i want to check the server config setting, not the per world setting
+        if (Objects.equals(challenge, "classic")) {
             Classic.start(server);
         } else if (Objects.equals(challenge, "netherite_assassins")) {
             NetheriteAssassins.start(server);
@@ -188,6 +189,10 @@ public class Manager {
     public static void runnerWin(MinecraftServer server) {
         GrieferManhuntTools.LOGGER.info("Runner Win");
         challengeRunning = false;
+
+        ServerPlayer runner = getRunner(server);
+        String runnerName = runner != null ? runner.getName().getString() : "Unknown";
+
         for (ServerPlayer player : server.getPlayerList().getPlayers()) {
             player.connection.send(
                     new ClientboundSetTitleTextPacket(
@@ -196,9 +201,38 @@ public class Manager {
             );
             player.connection.send(
                     new ClientboundSetSubtitleTextPacket(
-                            Component.literal("Name go here!")
+                            Component.literal(runnerName).withStyle(style -> style.withColor(ChatFormatting.DARK_GREEN).withBold(true))
                     )
             );
+        }
+    }
+
+    public static void hunterWin(MinecraftServer server) {
+        GrieferManhuntTools.LOGGER.info("Hunter Win");
+        challengeRunning = false;
+
+        String hunterNames = server.getPlayerList().getPlayers().stream().filter(Manager::isHunter).map(player -> player.getName().getString()).collect(Collectors.joining(", "));
+
+        for (ServerPlayer player : server.getPlayerList().getPlayers()) {
+            player.connection.send(
+                    new ClientboundSetTitleTextPacket(
+                            Component.literal("Hunters Win!").withStyle(style -> style.withColor(ChatFormatting.RED).withBold(true))
+                    )
+            );
+            player.connection.send(
+                    new ClientboundSetSubtitleTextPacket(
+                            Component.literal(hunterNames).withStyle(style -> style.withColor(ChatFormatting.DARK_RED).withBold(true))
+                    )
+            );
+        }
+    }
+
+    public static void runnerDeath(MinecraftServer server) {
+        GrieferManhuntTools.LOGGER.info("Runner Died");
+        switch (challenge) {
+            case "classic":
+                challengeRunning = false;
+                hunterWin(server);
         }
     }
 }

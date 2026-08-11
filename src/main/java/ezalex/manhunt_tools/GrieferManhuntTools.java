@@ -126,12 +126,14 @@ public class GrieferManhuntTools implements ModInitializer {
 
 		ServerLivingEntityEvents.AFTER_DEATH.register((entity, damageSource) -> {
 			LOGGER.info("AFTER_DEATH");
-			if (entity instanceof EnderDragon dragon) {
-				MinecraftServer server = entity.level().getServer();
-				LOGGER.info("The Ender Dragon has been defeated!");
-				if (server != null && Manager.challengeRunning) {
-					Manager.runnerWin(server);
+			if (entity instanceof ServerPlayer player) {
+				if (Manager.isRunner(player)) {
+					MinecraftServer server = player.level().getServer();
+					if (Manager.challengeRunning) {
+						Manager.runnerDeath(server);
+					}
 				}
+
 
 			}
 		});
