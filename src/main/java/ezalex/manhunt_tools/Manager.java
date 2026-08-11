@@ -2,20 +2,18 @@ package ezalex.manhunt_tools;
 
 import ezalex.manhunt_tools.challenges.Classic;
 import ezalex.manhunt_tools.challenges.NetheriteAssassins;
+import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.protocol.game.ClientboundSetActionBarTextPacket;
 import net.minecraft.network.protocol.game.ClientboundSetSubtitleTextPacket;
 import net.minecraft.network.protocol.game.ClientboundSetTitleTextPacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.ServerScoreboard;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.dimension.end.EnderDragonFight;
 import net.minecraft.world.scores.PlayerTeam;
 import net.minecraft.world.scores.TeamColor;
-import net.minecraft.ChatFormatting;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -112,27 +110,7 @@ public class Manager {
         }
         teamConfigs(server.getScoreboard());
         if (challengeRunning) {
-            ServerLevel end = server.getLevel(Level.END);
-            if (end != null) {
-                EnderDragonFight fight = end.getDragonFight();
-                if (fight != null && fight.hasPreviouslyKilledDragon()) {
-                    runnerWin(server);
-                }
-            }
-            timer.tick();
-            if (ConfigManager.get().showTimer) {
-                for (ServerPlayer player : server.getPlayerList().getPlayers()) {
-                    timer.showTo(player);
-                }
-            }
-            switch (challenge) {
-                case "classic": {
-                    Classic.tick(server);
-                }
-                case "netherite_assassins": {
-                    NetheriteAssassins.tick(server);
-                }
-            }
+            whileChallengeRunning(server);
         } else {
             switch (ConfigManager.get().challenge) {
                 case "challenge": {
@@ -141,6 +119,30 @@ public class Manager {
                 case "netherite_assassins": {
                     NetheriteAssassins.give_items(server);
                 }
+            }
+        }
+    }
+
+    public static void whileChallengeRunning(MinecraftServer server) {
+        ServerLevel end = server.getLevel(Level.END);
+        if (end != null) {
+            EnderDragonFight fight = end.getDragonFight();
+            if (fight != null && fight.hasPreviouslyKilledDragon()) {
+                runnerWin(server);
+            }
+        }
+        timer.tick();
+        if (ConfigManager.get().showTimer) {
+            for (ServerPlayer player : server.getPlayerList().getPlayers()) {
+                timer.showTo(player);
+            }
+        }
+        switch (challenge) {
+            case "classic": {
+                Classic.tick(server);
+            }
+            case "netherite_assassins": {
+                NetheriteAssassins.tick(server);
             }
         }
     }
@@ -230,9 +232,13 @@ public class Manager {
     public static void runnerDeath(MinecraftServer server) {
         GrieferManhuntTools.LOGGER.info("Runner Died");
         switch (challenge) {
-            case "classic":
-                challengeRunning = false;
+            case "classic": {
                 hunterWin(server);
+            }
+            case "netherite_assassins": {
+                // score system later maybe?
+            }
+
         }
     }
 }
