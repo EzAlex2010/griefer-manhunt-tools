@@ -124,8 +124,6 @@ public class GrieferManhuntTools implements ModInitializer {
 			Manager.save(server);
 		});
 
-		LOGGER.info("Registering AFTER_DEATH callback");
-
 		ServerLivingEntityEvents.AFTER_DEATH.register((entity, damageSource) -> {
 			LOGGER.info("AFTER_DEATH");
 			if (entity instanceof EnderDragon dragon) {

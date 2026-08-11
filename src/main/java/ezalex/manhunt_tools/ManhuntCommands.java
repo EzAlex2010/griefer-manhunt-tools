@@ -176,11 +176,8 @@ public class ManhuntCommands {
     }
 
     public static int start_challenge(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
-        if (Objects.equals(ConfigManager.get().challenge, "classic")) {
-            Classic.start(context.getSource().getServer());
-            return 1;
-        }
-        return 0;
+        Manager.start(context.getSource().getServer());
+        return 1;
     }
 
     private static LiteralArgumentBuilder<CommandSourceStack> boolSetting(String command, String displayName, Consumer<Boolean> setter) {

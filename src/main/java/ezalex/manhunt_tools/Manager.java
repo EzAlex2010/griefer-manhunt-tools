@@ -4,6 +4,7 @@ import ezalex.manhunt_tools.challenges.Classic;
 import ezalex.manhunt_tools.challenges.NetheriteAssassins;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundSetActionBarTextPacket;
+import net.minecraft.network.protocol.game.ClientboundSetSubtitleTextPacket;
 import net.minecraft.network.protocol.game.ClientboundSetTitleTextPacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.ServerScoreboard;
@@ -97,14 +98,6 @@ public class Manager {
     }
 
     public static void tick(MinecraftServer server) {
-//        ServerLevel end = server.getLevel(Level.END);
-//        if (end != null) {
-//            EnderDragonFight fight = end.getDragonFight();
-//            EnderDragon dragon = end.getDragons().getFirst();
-//            if (!dragon.isAlive()) {
-//                runnerWin(server);
-//            }
-//        }
         if (ConfigManager.get().giveHuntersCompass) {
             ticks++;
             if (ticks >= UPDATE_INTERVAL) {
@@ -118,6 +111,13 @@ public class Manager {
         }
         teamConfigs(server.getScoreboard());
         if (challengeRunning) {
+            ServerLevel end = server.getLevel(Level.END);
+            if (end != null) {
+                EnderDragonFight fight = end.getDragonFight();
+                if (fight != null && fight.hasPreviouslyKilledDragon()) {
+                    runnerWin(server);
+                }
+            }
             timer.tick();
             if (ConfigManager.get().showTimer) {
                 for (ServerPlayer player : server.getPlayerList().getPlayers()) {
@@ -187,10 +187,16 @@ public class Manager {
 
     public static void runnerWin(MinecraftServer server) {
         GrieferManhuntTools.LOGGER.info("Runner Win");
+        challengeRunning = false;
         for (ServerPlayer player : server.getPlayerList().getPlayers()) {
             player.connection.send(
                     new ClientboundSetTitleTextPacket(
                             Component.literal("Runner Wins!").withStyle(style -> style.withColor(ChatFormatting.GREEN).withBold(true))
+                    )
+            );
+            player.connection.send(
+                    new ClientboundSetSubtitleTextPacket(
+                            Component.literal("Name go here!")
                     )
             );
         }
