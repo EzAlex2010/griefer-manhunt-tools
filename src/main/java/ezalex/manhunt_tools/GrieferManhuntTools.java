@@ -137,6 +137,8 @@ public class GrieferManhuntTools implements ModInitializer {
 
 			}
 		});
+
+		ServerLifecycleEvents.SERVER_STARTED.register(Manager::setServer);
 	}
 
 	public static Identifier id(String path) {

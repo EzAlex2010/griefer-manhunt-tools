@@ -2,6 +2,7 @@ package ezalex.manhunt_tools;
 
 import ezalex.manhunt_tools.challenges.Classic;
 import ezalex.manhunt_tools.challenges.NetheriteAssassins;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundSetSubtitleTextPacket;
@@ -27,6 +28,7 @@ public class Manager {
     public static int UPDATE_INTERVAL = 20;
     public static boolean challengeRunning = false;
     public static String challenge = "classic";
+    private static MinecraftServer server;
 
     private static Timer timer = new Timer();
 
@@ -36,6 +38,14 @@ public class Manager {
 
     public static void setTimer(Timer newTimer) {
         timer = newTimer;
+    }
+
+    public static void setServer(MinecraftServer serverinstance) {
+        server = serverinstance;
+    }
+
+    public static MinecraftServer getServer() {
+        return server;
     }
 
     public static void save(MinecraftServer server) {
@@ -145,6 +155,10 @@ public class Manager {
                 NetheriteAssassins.tick(server);
             }
         }
+    }
+
+    public static void timerDone() {
+
     }
 
     public static void teamConfigs(ServerScoreboard scoreboard) {

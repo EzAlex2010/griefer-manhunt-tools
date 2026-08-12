@@ -36,6 +36,8 @@ public class Timer {
             case COUNTDOWN -> {
                 if (ticks > 0) {
                     ticks--;
+                } else {
+                    Manager.timerDone();
                 }
             }
             case STOPWATCH -> ticks++;
