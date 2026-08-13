@@ -2,6 +2,7 @@ package ezalex.manhunt_tools.challenges;
 
 import ezalex.manhunt_tools.ConfigManager;
 import ezalex.manhunt_tools.Manager;
+import ezalex.manhunt_tools.TeamManager;
 import ezalex.manhunt_tools.Timer;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponentType;
@@ -68,7 +69,7 @@ public class NetheriteAssassins {
 
     public static void give_items(MinecraftServer server) {
         for (ServerPlayer player : server.getPlayerList().getPlayers()) {
-            if (Manager.isHunter(player)) {
+            if (TeamManager.isHunter(player)) {
                 // Armor
                 if (player.getItemBySlot(EquipmentSlot.FEET).getItem() != Items.NETHERITE_BOOTS) player.setItemSlot(EquipmentSlot.FEET, createArmor(Items.NETHERITE_BOOTS, server));
                 if (player.getItemBySlot(EquipmentSlot.LEGS).getItem() != Items.NETHERITE_LEGGINGS) player.setItemSlot(EquipmentSlot.LEGS, createArmor(Items.NETHERITE_LEGGINGS, server));

@@ -5,6 +5,8 @@ import ezalex.manhunt_tools.challenges.NetheriteAssassins;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextColor;
+import net.minecraft.network.protocol.game.ClientboundSetActionBarTextPacket;
 import net.minecraft.network.protocol.game.ClientboundSetSubtitleTextPacket;
 import net.minecraft.network.protocol.game.ClientboundSetTitleTextPacket;
 import net.minecraft.server.MinecraftServer;
@@ -27,9 +29,10 @@ public class Manager {
     public static int compassUpdateTicks = 0;
     public static int UPDATE_INTERVAL = 20;
     public static boolean challengeRunning = false;
-    public static String challenge = "classic";
-    private static MinecraftServer server;
+    public static String challenge = "";
+    public static MinecraftServer server;
     private static Timer timer = new Timer();
+    private static String lastConfigChallenge = "";
 
     public static Timer getTimer() {
         return timer;
@@ -47,92 +50,69 @@ public class Manager {
         return server;
     }
 
-    public static void save(MinecraftServer server) {
-        Path file = server.getWorldPath(net.minecraft.world.level.storage.LevelResource.ROOT).resolve("challengeData.txt");
-        String data = (challengeRunning ? "1" : "0") + "|" + challenge + "|" + (timer.getMode().toString()) + "|" + timer.getTicks() + "|" + timer.getInitialTicks();
-        try {
-            Files.writeString(file, data);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
     public static void stopServer(MinecraftServer server) {
-        save(server);
-        //challengeRunning = false;
-        //challenge = "classic";
-        //timer = new Timer();
+        GrieferManhuntTools.LOGGER.info("SERVER_STOPPING: resetting Manager");
+        challengeRunning = false;
+        challenge = "";
+        timer = new Timer();
+        Manager.server = null;
     }
 
-    public static void createTeams(ServerScoreboard scoreboard) {
-        if (scoreboard.getPlayerTeam("hunter") == null) {
-            PlayerTeam hunter = scoreboard.addPlayerTeam("hunter");
-            hunter.setSeeFriendlyInvisibles(true);
-            GrieferManhuntTools.LOGGER.info("Created hunter team.");
+    public static void start(MinecraftServer server) {
+        GrieferManhuntTools.LOGGER.info("Starting Game");
+        Manager.challenge = ConfigManager.get().challenge;
+        if (Objects.equals(Manager.challenge, "classic")) {
+            Classic.start(server);
+        } else if (Objects.equals(Manager.challenge, "netherite_assassins")) {
+            NetheriteAssassins.start(server);
         }
-        if (scoreboard.getPlayerTeam("runner") == null) {
-            PlayerTeam runner = scoreboard.addPlayerTeam("runner");
-            GrieferManhuntTools.LOGGER.info("Created runner team.");
-        }
-    }
-
-    public static ServerPlayer getRunner(MinecraftServer server) {
-        ServerPlayer runner = null;
-        for (ServerPlayer player : server.getPlayerList().getPlayers()) {
-            if (player.getTeam() != null && player.getTeam().getName().equals("runner")) {
-                runner = player;
-                return runner;
-            }
-        }
-        GrieferManhuntTools.LOGGER.error("No player is on the runner team!");
-        return null;
-    }
-
-    public static void load(MinecraftServer server) {
-        ConfigManager.load();
-        UPDATE_INTERVAL = ConfigManager.get().compassUpdateInterval;
-        Path file = server.getWorldPath(net.minecraft.world.level.storage.LevelResource.ROOT).resolve("challengeData.txt");
-        if (Files.exists(file)) {
-            String data;
-            try {
-                data = Files.readString(file);
-            } catch (IOException e) {
-                GrieferManhuntTools.LOGGER.error("Failed to load challenge data", e);
-                return;
-            }
-            String[] parts = data.split("\\|");
-
-            challengeRunning = parts[0].equals("1");
-            if (parts[1].equals(Timer.Mode.COUNTDOWN.toString())) {
-                timer.configureCountdown(Long.parseLong(parts[3]));
-            } else {
-                timer.configureStopwatch();
-            }
-            timer.setTicks(Long.parseLong(parts[2]));
-        }
+        Manager.challengeRunning = true;
+        GameData.save(server);
     }
 
     public static void tick(MinecraftServer server) {
-        if (ConfigManager.get().giveHuntersCompass) {
-            compassUpdateTicks++;
-            if (compassUpdateTicks >= UPDATE_INTERVAL) {
-                compassUpdateTicks = 0;
+        String configuredChallenge = ConfigManager.get().challenge;
+        if (!Manager.challengeRunning && !Objects.equals(configuredChallenge, lastConfigChallenge)) {
+            GrieferManhuntTools.LOGGER.info(
+                    "Challenge changed from {} to {}. Resetting inventories.",
+                    lastConfigChallenge,
+                    configuredChallenge
+            );
+            clearInventories(server);
+            lastConfigChallenge = configuredChallenge;
+        }
+        Manager.compassUpdateTicks++;
+        if (Manager.compassUpdateTicks >= Manager.UPDATE_INTERVAL) {
+            Manager.compassUpdateTicks = 0;
+            if (ConfigManager.get().giveHuntersCompass) {
                 Compass.update(server);
-            }
-        } else {
-            for (ServerPlayer player : server.getPlayerList().getPlayers()) {
-                Compass.clear(player);
+            } else {
+                TeamManager.getRunner(server); // Run a check for the runner anyway.
+                for (ServerPlayer player : server.getPlayerList().getPlayers()) {
+                    Compass.clear(player);
+                }
             }
         }
-        teamConfigs(server.getScoreboard());
-        if (challengeRunning) {
-            whileChallengeRunning();
-        } else {
-            switch (ConfigManager.get().challenge) {
-                case "challenge": {
-                    break;
+        TeamManager.teamConfigs(server.getScoreboard());
+        if (Manager.challengeRunning) {
+            if (TeamManager.validRunnerFound) {
+                whileChallengeRunning();
+            } else {
+                for (ServerPlayer player : server.getPlayerList().getPlayers()) {
+                    player.connection.send(
+                            new ClientboundSetActionBarTextPacket(
+                                    Component.literal("No Runner Found").withColor(TextColor.RED)
+                            )
+                    );
                 }
-                case "netherite_assassins": {
+
+            }
+        } else {
+            switch (configuredChallenge) {
+                case "challenge" -> {
+
+                }
+                case "netherite_assassins" -> {
                     NetheriteAssassins.give_items(server);
                 }
             }
@@ -140,11 +120,11 @@ public class Manager {
     }
 
     public static void whileChallengeRunning() {
-        ServerLevel end = server.getLevel(Level.END);
+        ServerLevel end = Manager.server.getLevel(Level.END);
         if (end != null) {
             EnderDragonFight fight = end.getDragonFight();
             if (fight != null && fight.hasPreviouslyKilledDragon()) {
-                runnerWin(server);
+                GameDisplay.runnerWin(server);
             }
         }
         timer.tick();
@@ -154,108 +134,23 @@ public class Manager {
             }
         }
         switch (challenge) {
-            case "classic": {
+            case "classic" -> {
                 Classic.tick(server);
             }
-            case "netherite_assassins": {
+            case "netherite_assassins" -> {
                 NetheriteAssassins.tick(server);
             }
         }
     }
 
     public static void timerDone() {
-        GrieferManhuntTools.LOGGER.info("Timer has finished!");
-        GrieferManhuntTools.LOGGER.info(challenge);
         switch (challenge) {
             case "classic" -> {
 
             }
             case "netherite_assassins" -> {
-                GrieferManhuntTools.LOGGER.info("This code ran!");
-                hunterWin(server);
+                GameDisplay.hunterWin(server);
             }
-        }
-    }
-
-    public static void teamConfigs(ServerScoreboard scoreboard) {
-        PlayerTeam runner = scoreboard.getPlayerTeam("runner");
-        PlayerTeam hunters = scoreboard.getPlayerTeam("hunter");
-        if (hunters != null && runner != null) {
-            if (ConfigManager.get().showTeamColors) {
-                runner.setColor(Optional.of(TeamColor.GREEN));
-                hunters.setColor(Optional.of(TeamColor.RED));
-            } else {
-                runner.setColor(Optional.empty());
-                hunters.setColor(Optional.empty());
-            }
-            if (ConfigManager.get().hunterFriendlyFire) {
-                hunters.setAllowFriendlyFire(true);
-            } else {
-                hunters.setAllowFriendlyFire(false);
-            }
-        } else {
-            createTeams(scoreboard);
-        }
-    }
-
-    public static void start(MinecraftServer server) {
-        GrieferManhuntTools.LOGGER.info("Starting Game");
-        challenge = ConfigManager.get().challenge;
-        if (Objects.equals(challenge, "classic")) {
-            Classic.start(server);
-        } else if (Objects.equals(challenge, "netherite_assassins")) {
-            NetheriteAssassins.start(server);
-        }
-        challengeRunning = true;
-        save(server);
-    }
-
-    public static boolean isRunner(ServerPlayer player) {
-        return player.getTeam() != null && player.getTeam().getName().equals("runner");
-    }
-
-    public static boolean isHunter(ServerPlayer player) {
-        return player.getTeam() != null && player.getTeam().getName().equals("hunter");
-    }
-
-    public static void runnerWin(MinecraftServer server) {
-        GrieferManhuntTools.LOGGER.info("Runner Win");
-        challengeRunning = false;
-
-        ServerPlayer runner = getRunner(server);
-        String runnerName = runner != null ? runner.getName().getString() : "Unknown";
-
-        for (ServerPlayer player : server.getPlayerList().getPlayers()) {
-            player.connection.send(
-                    new ClientboundSetTitleTextPacket(
-                            Component.literal("Runner Wins!").withStyle(style -> style.withColor(ChatFormatting.GREEN).withBold(true))
-                    )
-            );
-            player.connection.send(
-                    new ClientboundSetSubtitleTextPacket(
-                            Component.literal(runnerName).withStyle(style -> style.withColor(ChatFormatting.DARK_GREEN).withBold(true))
-                    )
-            );
-        }
-    }
-
-    public static void hunterWin(MinecraftServer server) {
-        GrieferManhuntTools.LOGGER.info("Hunter Win");
-        challengeRunning = false;
-
-        String hunterNames = server.getPlayerList().getPlayers().stream().filter(Manager::isHunter).map(player -> player.getName().getString()).collect(Collectors.joining(", "));
-
-        for (ServerPlayer player : server.getPlayerList().getPlayers()) {
-            player.connection.send(
-                    new ClientboundSetTitleTextPacket(
-                            Component.literal("Hunters Win!").withStyle(style -> style.withColor(ChatFormatting.RED).withBold(true))
-                    )
-            );
-            player.connection.send(
-                    new ClientboundSetSubtitleTextPacket(
-                            Component.literal(hunterNames).withStyle(style -> style.withColor(ChatFormatting.DARK_RED).withBold(true))
-                    )
-            );
         }
     }
 
@@ -263,12 +158,18 @@ public class Manager {
         GrieferManhuntTools.LOGGER.info("Runner Died");
         switch (challenge) {
             case "classic": {
-                hunterWin(server);
+                GameDisplay.hunterWin(server);
             }
             case "netherite_assassins": {
                 // score system later maybe?
             }
 
+        }
+    }
+
+    public static void clearInventories(MinecraftServer server) {
+        for (ServerPlayer player : server.getPlayerList().getPlayers()) {
+            player.getInventory().clearContent();
         }
     }
 }

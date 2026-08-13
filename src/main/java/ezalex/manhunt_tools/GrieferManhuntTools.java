@@ -32,7 +32,7 @@ public class GrieferManhuntTools implements ModInitializer {
 	public void onInitialize() {
 		ManhuntCommands.register();
 
-		ServerLifecycleEvents.SERVER_STARTING.register(Manager::load);
+		ServerLifecycleEvents.SERVER_STARTING.register(GameData::load);
 
 		PayloadTypeRegistry.clientboundPlay().register(
 				OpenChallengeScreenPayload.TYPE,
@@ -104,12 +104,8 @@ public class GrieferManhuntTools implements ModInitializer {
 			if (!(entity instanceof ServerPlayer target)) {
 				return InteractionResult.PASS;
 			}
-			LOGGER.info("hit");
 
-			LOGGER.info("isRunner={}, isHunter={}, running={}", Manager.isHunter(target), Manager.isRunner(attacker), Manager.challengeRunning);
-
-			if (Manager.isHunter(target) && Manager.isRunner(attacker) && !Manager.challengeRunning) {
-				LOGGER.info("start");
+			if (TeamManager.isHunter(target) && TeamManager.isRunner(attacker) && !Manager.challengeRunning) {
 				Manager.start(attacker.level().getServer());
 				return InteractionResult.SUCCESS;
 			}
@@ -118,16 +114,17 @@ public class GrieferManhuntTools implements ModInitializer {
 
 		ServerTickEvents.END_SERVER_TICK.register(Manager::tick);
 
-		ServerLifecycleEvents.SERVER_STOPPING.register(Manager::stopServer);
+		ServerLifecycleEvents.SERVER_STOPPING.register(GameData::save);
+		ServerLifecycleEvents.SERVER_STOPPED.register(Manager::stopServer);
 
 		ServerLifecycleEvents.BEFORE_SAVE.register((server, flush, force) -> {
-			Manager.save(server);
+			GameData.save(server);
 		});
 
 		ServerLivingEntityEvents.AFTER_DEATH.register((entity, damageSource) -> {
 			LOGGER.info("AFTER_DEATH");
 			if (entity instanceof ServerPlayer player) {
-				if (Manager.isRunner(player)) {
+				if (TeamManager.isRunner(player)) {
 					MinecraftServer server = player.level().getServer();
 					if (Manager.challengeRunning) {
 						Manager.runnerDeath(server);
