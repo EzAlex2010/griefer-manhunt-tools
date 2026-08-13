@@ -12,7 +12,7 @@ public class TeamManager {
     public static boolean validRunnerFound = false;
 
     public static ServerPlayer getRunner(MinecraftServer server) {
-        ServerPlayer runner = null;
+        ServerPlayer runner;
         for (ServerPlayer player : server.getPlayerList().getPlayers()) {
             if (player.getTeam() != null && player.getTeam().getName().equals("runner")) {
                 runner = player;
