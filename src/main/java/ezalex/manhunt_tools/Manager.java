@@ -49,7 +49,7 @@ public class Manager {
 
     public static void save(MinecraftServer server) {
         Path file = server.getWorldPath(net.minecraft.world.level.storage.LevelResource.ROOT).resolve("challengeData.txt");
-        String data = (challengeRunning ? "1" : "0") + "|" + (timer.getMode().toString()) + "|" + timer.getTicks() + "|" + timer.getInitialTicks();
+        String data = (challengeRunning ? "1" : "0") + "|" + challenge + "|" + (timer.getMode().toString()) + "|" + timer.getTicks() + "|" + timer.getInitialTicks();
         try {
             Files.writeString(file, data);
         } catch (IOException e) {
