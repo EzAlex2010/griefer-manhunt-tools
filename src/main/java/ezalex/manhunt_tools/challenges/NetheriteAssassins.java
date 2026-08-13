@@ -27,9 +27,6 @@ public class NetheriteAssassins {
     }
 
     public static void tick(MinecraftServer server) {
-        if (Manager.getTimer().isFinished()) {
-
-        }
     }
 
     private static ItemStack createArmor(Item item, MinecraftServer server) {

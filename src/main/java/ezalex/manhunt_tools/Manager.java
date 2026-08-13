@@ -24,12 +24,11 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class Manager {
-    public static int ticks = 0;
+    public static int compassUpdateTicks = 0;
     public static int UPDATE_INTERVAL = 20;
     public static boolean challengeRunning = false;
     public static String challenge = "classic";
     private static MinecraftServer server;
-
     private static Timer timer = new Timer();
 
     public static Timer getTimer() {
@@ -56,6 +55,13 @@ public class Manager {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public static void stopServer(MinecraftServer server) {
+        save(server);
+        //challengeRunning = false;
+        //challenge = "classic";
+        //timer = new Timer();
     }
 
     public static void createTeams(ServerScoreboard scoreboard) {
@@ -108,9 +114,9 @@ public class Manager {
 
     public static void tick(MinecraftServer server) {
         if (ConfigManager.get().giveHuntersCompass) {
-            ticks++;
-            if (ticks >= UPDATE_INTERVAL) {
-                ticks = 0;
+            compassUpdateTicks++;
+            if (compassUpdateTicks >= UPDATE_INTERVAL) {
+                compassUpdateTicks = 0;
                 Compass.update(server);
             }
         } else {
@@ -120,7 +126,7 @@ public class Manager {
         }
         teamConfigs(server.getScoreboard());
         if (challengeRunning) {
-            whileChallengeRunning(server);
+            whileChallengeRunning();
         } else {
             switch (ConfigManager.get().challenge) {
                 case "challenge": {
@@ -133,7 +139,7 @@ public class Manager {
         }
     }
 
-    public static void whileChallengeRunning(MinecraftServer server) {
+    public static void whileChallengeRunning() {
         ServerLevel end = server.getLevel(Level.END);
         if (end != null) {
             EnderDragonFight fight = end.getDragonFight();
@@ -158,7 +164,17 @@ public class Manager {
     }
 
     public static void timerDone() {
+        GrieferManhuntTools.LOGGER.info("Timer has finished!");
+        GrieferManhuntTools.LOGGER.info(challenge);
+        switch (challenge) {
+            case "classic" -> {
 
+            }
+            case "netherite_assassins" -> {
+                GrieferManhuntTools.LOGGER.info("This code ran!");
+                hunterWin(server);
+            }
+        }
     }
 
     public static void teamConfigs(ServerScoreboard scoreboard) {

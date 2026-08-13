@@ -118,7 +118,7 @@ public class GrieferManhuntTools implements ModInitializer {
 
 		ServerTickEvents.END_SERVER_TICK.register(Manager::tick);
 
-		ServerLifecycleEvents.SERVER_STOPPING.register(Manager::save);
+		ServerLifecycleEvents.SERVER_STOPPING.register(Manager::stopServer);
 
 		ServerLifecycleEvents.BEFORE_SAVE.register((server, flush, force) -> {
 			Manager.save(server);

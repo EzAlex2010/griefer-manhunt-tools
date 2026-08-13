@@ -74,6 +74,9 @@ public class ManhuntCommands {
             dispatcher.register(
                     Commands.literal("compass").executes(ManhuntCommands::compass)
             );
+            dispatcher.register(
+                    Commands.literal("timer_control").then(Commands.argument("ticks", IntegerArgumentType.integer(1)).executes(ManhuntCommands::set_time))
+            );
         });
     }
 
@@ -197,8 +200,14 @@ public class ManhuntCommands {
         ConfigManager.get().compassUpdateInterval = ticks;
         GrieferManhuntTools.LOGGER.info("Set Compass update interval to " + ticks);
         Manager.UPDATE_INTERVAL = ticks;
-        Manager.ticks = 0;
+        Manager.compassUpdateTicks = 0;
         ConfigManager.save();
         return ticks;
+    }
+
+    public static int set_time(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+        int ticks = IntegerArgumentType.getInteger(context, "ticks");
+        Manager.getTimer().setTicks((long) ticks);
+        return 1;
     }
 }
