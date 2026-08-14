@@ -11,9 +11,9 @@ public class Classic {
         Manager.getTimer().configureStopwatch();
     }
 
-    public static void tick(MinecraftServer server) {
+    public static void tick(MinecraftServer server) {}
 
-    }
+    public static void preChallengeTick(MinecraftServer server) {}
 
     public static void setup(MinecraftServer server) {
         ConfigManager.get().showTimer = false;

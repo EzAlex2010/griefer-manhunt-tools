@@ -27,7 +27,9 @@ public class NetheriteAssassins {
         Manager.getTimer().configureCountdown((ConfigManager.get().timerLength * 20L));
     }
 
-    public static void tick(MinecraftServer server) {
+    public static void tick(MinecraftServer server) {}
+    public static void preChallengeTick(MinecraftServer server) {
+        give_items(server);
     }
 
     private static ItemStack createArmor(Item item, MinecraftServer server) {

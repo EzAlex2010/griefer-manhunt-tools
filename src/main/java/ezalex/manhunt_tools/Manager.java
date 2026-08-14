@@ -2,6 +2,7 @@ package ezalex.manhunt_tools;
 
 import ezalex.manhunt_tools.challenges.Classic;
 import ezalex.manhunt_tools.challenges.NetheriteAssassins;
+import ezalex.manhunt_tools.challenges.TankVsAssassins;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
@@ -61,10 +62,16 @@ public class Manager {
     public static void start(MinecraftServer server) {
         GrieferManhuntTools.LOGGER.info("Starting Game");
         Manager.challenge = ConfigManager.get().challenge;
-        if (Objects.equals(Manager.challenge, "classic")) {
-            Classic.start(server);
-        } else if (Objects.equals(Manager.challenge, "netherite_assassins")) {
-            NetheriteAssassins.start(server);
+        switch (Manager.challenge) {
+            case "classic" -> {
+                Classic.start(server);
+            }
+            case "netherite_assassins" -> {
+                NetheriteAssassins.start(server);
+            }
+            case "tva" -> {
+                TankVsAssassins.start(server);
+            }
         }
         Manager.challengeRunning = true;
         GameData.save(server);
@@ -109,11 +116,14 @@ public class Manager {
             }
         } else {
             switch (configuredChallenge) {
-                case "challenge" -> {
-
+                case "classic" -> {
+                    Classic.preChallengeTick(server);
                 }
                 case "netherite_assassins" -> {
-                    NetheriteAssassins.give_items(server);
+                    NetheriteAssassins.preChallengeTick(server);
+                }
+                case "tva" -> {
+                    TankVsAssassins.preChallengeTick(server);
                 }
             }
         }
@@ -140,6 +150,9 @@ public class Manager {
             case "netherite_assassins" -> {
                 NetheriteAssassins.tick(server);
             }
+            case "tva" -> {
+                TankVsAssassins.tick(server);
+            }
         }
     }
 
@@ -151,19 +164,21 @@ public class Manager {
             case "netherite_assassins" -> {
                 GameDisplay.hunterWin(server);
             }
+            case "tva" -> {
+                GameDisplay.runnerWin(server);
+            }
         }
     }
 
     public static void runnerDeath(MinecraftServer server) {
         GrieferManhuntTools.LOGGER.info("Runner Died");
         switch (challenge) {
-            case "classic": {
+            case "classic", "tva" -> {
                 GameDisplay.hunterWin(server);
             }
-            case "netherite_assassins": {
+            case "netherite_assassins" -> {
                 // score system later maybe?
             }
-
         }
     }
 
