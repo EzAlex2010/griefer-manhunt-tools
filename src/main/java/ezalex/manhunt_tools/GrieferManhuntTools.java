@@ -26,7 +26,7 @@ public class GrieferManhuntTools implements ModInitializer {
 	// This logger is used to write text to the console and the log file.
 	// It is considered best practice to use your mod id as the logger's name.
 	// That way, it's clear which mod wrote info, warnings, and errors.
-	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
+	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID+":SERVER");
 
 	@Override
 	public void onInitialize() {
@@ -62,6 +62,11 @@ public class GrieferManhuntTools implements ModInitializer {
 		PayloadTypeRegistry.clientboundPlay().register(
 				EndScreenPayload.TYPE,
 				EndScreenPayload.CODEC
+		);
+
+		PayloadTypeRegistry.clientboundPlay().register(
+				TimerDisplayPayload.TYPE,
+				TimerDisplayPayload.CODEC
 		);
 
 		ServerPlayNetworking.registerGlobalReceiver(

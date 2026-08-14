@@ -4,11 +4,13 @@ import ezalex.manhunt_tools.GrieferManhuntTools;
 import ezalex.manhunt_tools.networking.ConfigDataPayload;
 import ezalex.manhunt_tools.networking.EndScreenPayload;
 import ezalex.manhunt_tools.networking.OpenChallengeScreenPayload;
+import ezalex.manhunt_tools.networking.TimerDisplayPayload;
 import net.fabricmc.api.ClientModInitializer;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.Minecraft;
+import net.minecraft.network.chat.Component;
 import org.lwjgl.glfw.GLFW;
 
 import net.minecraft.client.KeyMapping;
@@ -21,7 +23,7 @@ import org.slf4j.LoggerFactory;
 
 public class GrieferManhuntToolsClient implements ClientModInitializer{
 	public static final String MOD_ID = "griefer-manhunt-tools";
-	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
+	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID+":CLIENT");
 	@Override
 	public void onInitializeClient() {
 		ClientConfigManager.load();
@@ -31,6 +33,15 @@ public class GrieferManhuntToolsClient implements ClientModInitializer{
 				Minecraft.getInstance().setScreenAndShow(
 						new ConfigScreen(null)
 				);
+			}
+			while (this.toggleTimerDisplay.consumeClick()) {
+				boolean current = ClientConfigManager.get().showTimer;
+				ClientConfigManager.get().showTimer = !current;
+				ClientConfigManager.save();
+				Minecraft.getInstance().gui.hud.setOverlayMessage(
+						Component.literal(""), false
+				);
+
 			}
 		});
 
@@ -52,18 +63,26 @@ public class GrieferManhuntToolsClient implements ClientModInitializer{
 		ClientPlayNetworking.registerGlobalReceiver(
 				EndScreenPayload.TYPE,
 				(payload, context) -> {
-
-					if (!ClientConfigManager.get().showEndScreen) {
-						return;
+					if (ClientConfigManager.get().showEndScreen) {
+						Minecraft.getInstance().gui.hud.setTitle(
+								payload.title()
+						);
+						Minecraft.getInstance().gui.hud.setSubtitle(
+								payload.subtitle()
+						);
+					} else {
+						LOGGER.info("Title Screen Off");
 					}
-
-					Minecraft.getInstance().gui.hud.setTitle(
-							payload.title()
-					);
-
-					Minecraft.getInstance().gui.hud.setSubtitle(
-							payload.subtitle()
-					);
+				}
+		);
+		ClientPlayNetworking.registerGlobalReceiver(
+				TimerDisplayPayload.TYPE,
+				(payload, context) -> {
+					if (ClientConfigManager.get().showTimer) {
+						Minecraft.getInstance().gui.hud.setOverlayMessage(
+								payload.text(), false
+						);
+					}
 				}
 		);
 	}
@@ -79,7 +98,16 @@ public class GrieferManhuntToolsClient implements ClientModInitializer{
 			new KeyMapping(
 					"key.griefer-manhunt-tools.open_config_screen",
 					InputConstants.Type.KEYSYM,
-					GLFW.GLFW_KEY_P,
+					GLFW.GLFW_KEY_HOME,
+					this.CATEGORY
+			)
+	);
+
+	KeyMapping toggleTimerDisplay = KeyMappingHelper.registerKeyMapping(
+			new KeyMapping(
+					"key.griefer-manhunt-tools.toggle_timer",
+					InputConstants.Type.KEYSYM,
+					GLFW.GLFW_KEY_INSERT,
 					this.CATEGORY
 			)
 	);

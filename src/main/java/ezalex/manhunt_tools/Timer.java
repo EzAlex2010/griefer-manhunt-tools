@@ -1,5 +1,8 @@
 package ezalex.manhunt_tools;
 
+import ezalex.manhunt_tools.networking.EndScreenPayload;
+import ezalex.manhunt_tools.networking.TimerDisplayPayload;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundSetActionBarTextPacket;
@@ -134,10 +137,11 @@ public class Timer {
     }
 
     public void showTo(ServerPlayer player) {
-        player.connection.send(
-            new ClientboundSetActionBarTextPacket(
-                getFormattedComponent()
-            )
+        ServerPlayNetworking.send(
+                player,
+                new TimerDisplayPayload(
+                        getFormattedComponent()
+                )
         );
     }
 }

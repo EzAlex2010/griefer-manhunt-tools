@@ -1,6 +1,7 @@
 package ezalex.manhunt_tools;
 
 import ezalex.manhunt_tools.networking.EndScreenPayload;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundSetSubtitleTextPacket;
@@ -20,13 +21,10 @@ public class GameDisplay {
         String runnerName = runner != null ? runner.getName().getString() : "Unknown";
 
         for (ServerPlayer player : server.getPlayerList().getPlayers()) {
-            player.connection.send(
+            ServerPlayNetworking.send(
+                    player,
                     new EndScreenPayload(
-                            Component.literal("Runner Wins!").withStyle(style -> style.withColor(ChatFormatting.GREEN).withBold(true)), Component.literal(runnerName).withStyle(style -> style.withColor(ChatFormatting.DARK_GREEN).withBold(true))
-                    )
-            );
-            player.connection.send(
-                    new ClientboundSetSubtitleTextPacket(
+                            Component.literal("Runner Wins!").withStyle(style -> style.withColor(ChatFormatting.GREEN).withBold(true)),
                             Component.literal(runnerName).withStyle(style -> style.withColor(ChatFormatting.DARK_GREEN).withBold(true))
                     )
             );
@@ -40,13 +38,10 @@ public class GameDisplay {
         String hunterNames = server.getPlayerList().getPlayers().stream().filter(TeamManager::isHunter).map(player -> player.getName().getString()).collect(Collectors.joining(", "));
 
         for (ServerPlayer player : server.getPlayerList().getPlayers()) {
-            player.connection.send(
-                    new ClientboundSetTitleTextPacket(
-                            Component.literal("Hunters Win!").withStyle(style -> style.withColor(ChatFormatting.RED).withBold(true))
-                    )
-            );
-            player.connection.send(
-                    new ClientboundSetSubtitleTextPacket(
+            ServerPlayNetworking.send(
+                    player,
+                    new EndScreenPayload(
+                            Component.literal("Runner Wins!").withStyle(style -> style.withColor(ChatFormatting.RED).withBold(true)),
                             Component.literal(hunterNames).withStyle(style -> style.withColor(ChatFormatting.DARK_RED).withBold(true))
                     )
             );
