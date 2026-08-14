@@ -7,6 +7,6 @@ public class GrieferManhuntToolsModMenu implements ModMenuApi {
 
     @Override
     public ConfigScreenFactory<?> getModConfigScreenFactory() {
-        return LoadingConfigScreen::new;
+        return ConfigScreen::new;
     }
 }

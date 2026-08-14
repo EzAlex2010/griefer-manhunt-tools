@@ -8,7 +8,6 @@ public class ServerConfigCopy {
     private static Config config = new Config();
 
     public static Screen parentScreen;
-    public static String challenge;
 
     public static void set(Config newConfig) {
         config = newConfig;
