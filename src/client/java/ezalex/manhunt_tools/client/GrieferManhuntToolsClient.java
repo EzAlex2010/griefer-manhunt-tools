@@ -2,6 +2,7 @@ package ezalex.manhunt_tools.client;
 
 import ezalex.manhunt_tools.GrieferManhuntTools;
 import ezalex.manhunt_tools.networking.ConfigDataPayload;
+import ezalex.manhunt_tools.networking.EndScreenPayload;
 import ezalex.manhunt_tools.networking.OpenChallengeScreenPayload;
 import net.fabricmc.api.ClientModInitializer;
 
@@ -45,6 +46,24 @@ public class GrieferManhuntToolsClient implements ClientModInitializer{
 				(payload, context) -> {
 					ServerConfigCopy.set(payload.config());
 					context.client().setScreenAndShow(new ServerConfigScreen(ServerConfigCopy.parentScreen));
+				}
+		);
+
+		ClientPlayNetworking.registerGlobalReceiver(
+				EndScreenPayload.TYPE,
+				(payload, context) -> {
+
+					if (!ClientConfigManager.get().showEndScreen) {
+						return;
+					}
+
+					Minecraft.getInstance().gui.hud.setTitle(
+							payload.title()
+					);
+
+					Minecraft.getInstance().gui.hud.setSubtitle(
+							payload.subtitle()
+					);
 				}
 		);
 	}

@@ -1,5 +1,6 @@
 package ezalex.manhunt_tools;
 
+import ezalex.manhunt_tools.networking.EndScreenPayload;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundSetSubtitleTextPacket;
@@ -20,8 +21,8 @@ public class GameDisplay {
 
         for (ServerPlayer player : server.getPlayerList().getPlayers()) {
             player.connection.send(
-                    new ClientboundSetTitleTextPacket(
-                            Component.literal("Runner Wins!").withStyle(style -> style.withColor(ChatFormatting.GREEN).withBold(true))
+                    new EndScreenPayload(
+                            Component.literal("Runner Wins!").withStyle(style -> style.withColor(ChatFormatting.GREEN).withBold(true)), Component.literal(runnerName).withStyle(style -> style.withColor(ChatFormatting.DARK_GREEN).withBold(true))
                     )
             );
             player.connection.send(

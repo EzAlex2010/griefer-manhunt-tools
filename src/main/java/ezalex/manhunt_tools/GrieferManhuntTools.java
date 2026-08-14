@@ -59,6 +59,11 @@ public class GrieferManhuntTools implements ModInitializer {
 				RequestConfigPayload.CODEC
 		);
 
+		PayloadTypeRegistry.clientboundPlay().register(
+				EndScreenPayload.TYPE,
+				EndScreenPayload.CODEC
+		);
+
 		ServerPlayNetworking.registerGlobalReceiver(
 				SetChallengePayload.TYPE,
 				(payload, context) -> {
