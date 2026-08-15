@@ -20,49 +20,41 @@ public class ConfigScreen extends Screen {
     protected void init() {
         super.init();
 
+        int y = this.height / 2 - 40;
+
         this.addRenderableWidget(
                 new ConfigButton(
                         this.width / 2 - 100,
-                        60,
+                        y,
                         200,
                         20,
-                        Component.literal("Client Settings")
+                        Component.literal("Client Settings"),
+                        () -> Minecraft.getInstance().setScreenAndShow(
+                            new ClientConfigScreen(this)
+                        )
                 )
-//                Button.builder(
-//                        Component.literal("Client Settings"),
-//                        button -> Minecraft.getInstance().setScreenAndShow(
-//                                new ClientConfigScreen(this)
-//                        )
-//                ).bounds(
-//                        this.width / 2 - 100,
-//                        60,
-//                        200,
-//                        20
-//                ).build()
         );
 
         this.addRenderableWidget(
-                Button.builder(
+                new ConfigButton(
+                        this.width / 2 - 100,
+                        y + 40,
+                        200,
+                        20,
                         Component.literal("Server Settings"),
-                        button -> requestServerConfig()
-                ).bounds(
-                        this.width / 2 - 100,
-                        90,
-                        200,
-                        20
-                ).build()
+                        this::requestServerConfig
+                )
         );
 
         this.addRenderableWidget(
-                Button.builder(
-                        Component.literal("Done"),
-                        button -> this.onClose()
-                ).bounds(
+                new ConfigButton(
                         this.width / 2 - 100,
-                        this.height - 40,
+                        y + 80,
                         200,
-                        20
-                ).build()
+                        20,
+                        Component.literal("Done"),
+                        this::onClose
+                )
         );
     }
 

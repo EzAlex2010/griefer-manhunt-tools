@@ -1,6 +1,8 @@
 package ezalex.manhunt_tools.client;
 
 import ezalex.manhunt_tools.Config;
+import ezalex.manhunt_tools.client.widgets.ConfigButton;
+import ezalex.manhunt_tools.client.widgets.ConfigCheckbox;
 import ezalex.manhunt_tools.networking.SaveConfigPayload;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.Minecraft;
@@ -23,30 +25,33 @@ public class ServerConfigScreen extends Screen {
     Config config = ServerConfigCopy.get();
 
     private EditBox compassIntervalBox;
-    private Checkbox showTeamColorsBox;
-    private Checkbox giveHuntersCompassBox;
-    private Checkbox hunterFriendlyFireBox;
-    private Checkbox showTimerBox;
+    private ConfigCheckbox showTeamColorsBox;
+    private ConfigCheckbox giveHuntersCompassBox;
+    private ConfigCheckbox hunterFriendlyFireBox;
     private EditBox TimeBox;
 
     @Override
     protected void init() {
         super.init();
 
-        int y = 30;
-        int y_space = 20;
+        int y = 40;
+        int y_space = 30;
 
         this.addRenderableWidget(
-                Button.builder(
+                new ConfigButton(
+                        this.width / 2 - 60,
+                        y,
+                        120,
+                        20,
                         Component.literal("Select Challenge"),
-                        button -> {
+                        () -> {
                             save();
                             Minecraft.getInstance().setScreenAndShow(new ChallengeScreen());
                         }
-                ).bounds(this.width / 2 - 60, y, 120, 20).build()
+                )
         );
 
-        y = y + 25;
+        y = y + y_space;
 
         compassIntervalBox = new EditBox(
                 this.font,
@@ -63,31 +68,39 @@ public class ServerConfigScreen extends Screen {
 
         y = y + y_space;
 
-        showTeamColorsBox = Checkbox.builder(Component.literal("Show Team Colors"), this.font)
-                .selected(config.showTeamColors)
-                .pos(this.width / 2 - 100, y)
-                .build();
+        showTeamColorsBox = new ConfigCheckbox(
+                this.width / 2,
+                y,
+                80,
+                20,
+                Component.literal("Show Team Colors"),
+                config.showTeamColors,
+                true
+        );
 
         y = y + y_space;
 
-        giveHuntersCompassBox = Checkbox.builder(Component.literal("Give Hunters Compass"), this.font)
-                .selected(config.giveHuntersCompass)
-                .pos(this.width / 2 - 100, y)
-                .build();
+        giveHuntersCompassBox = new ConfigCheckbox(
+                this.width / 2,
+                y,
+                80,
+                20,
+                Component.literal("Give Hunters Compass"),
+                config.giveHuntersCompass,
+                false
+        );
 
         y = y + y_space;
 
-        hunterFriendlyFireBox = Checkbox.builder(Component.literal("Allow Hunter Friendly Fire"), this.font)
-                .selected(config.hunterFriendlyFire)
-                .pos(this.width / 2 - 100, y)
-                .build();
-
-        y = y + y_space;
-
-        showTimerBox = Checkbox.builder(Component.literal("Show Timer On Action Bar"), this.font)
-                .selected(config.showTimer)
-                .pos(this.width / 2 - 100, y)
-                .build();
+        hunterFriendlyFireBox = new ConfigCheckbox(
+                this.width / 2,
+                y,
+                80,
+                20,
+                Component.literal("Allow Hunter Friendly Fire"),
+                config.hunterFriendlyFire,
+                true
+        );
 
         y = y + y_space;
 
@@ -109,23 +122,26 @@ public class ServerConfigScreen extends Screen {
         this.addRenderableWidget(showTeamColorsBox);
         this.addRenderableWidget(giveHuntersCompassBox);
         this.addRenderableWidget(hunterFriendlyFireBox);
-        this.addRenderableWidget(showTimerBox);
         this.addRenderableWidget(TimeBox);
         this.addRenderableWidget(
-                Button.builder(
+                new ConfigButton(
+                        this.width / 2 - 140,
+                        this.height - 30,
+                        120,
+                        20,
                         Component.literal("Save"),
-                        button -> {
-                            save();
-                        }
-                ).bounds(this.width / 2 - 120, this.height - 30, 120, 20).build()
+                        this::save
+                )
         );
         this.addRenderableWidget(
-                Button.builder(
+                new ConfigButton(
+                        this.width / 2 + 20,
+                        this.height - 30,
+                        120,
+                        20,
                         Component.literal("Close"),
-                        button -> {
-                            this.onClose();
-                        }
-                ).bounds(this.width / 2 + 20, this.height - 30, 120, 20).build()
+                        this::onClose
+                )
         );
     }
 
@@ -169,10 +185,9 @@ public class ServerConfigScreen extends Screen {
         }
 
         config.compassUpdateInterval = interval;
-        config.showTeamColors = showTeamColorsBox.selected();
-        config.giveHuntersCompass = giveHuntersCompassBox.selected();
-        config.hunterFriendlyFire = hunterFriendlyFireBox.selected();
-        config.showTimer = showTimerBox.selected();
+        config.showTeamColors = showTeamColorsBox.isToggled();
+        config.giveHuntersCompass = giveHuntersCompassBox.isToggled();
+        config.hunterFriendlyFire = hunterFriendlyFireBox.isToggled();
         config.timerLength = time;
 
         ClientPlayNetworking.send(new SaveConfigPayload(config));

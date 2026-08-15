@@ -41,7 +41,7 @@ public class GameDisplay {
             ServerPlayNetworking.send(
                     player,
                     new EndScreenPayload(
-                            Component.literal("Runner Wins!").withStyle(style -> style.withColor(ChatFormatting.RED).withBold(true)),
+                            Component.literal("Hunter Wins!").withStyle(style -> style.withColor(ChatFormatting.RED).withBold(true)),
                             Component.literal(hunterNames).withStyle(style -> style.withColor(ChatFormatting.DARK_RED).withBold(true))
                     )
             );

@@ -138,10 +138,8 @@ public class Manager {
             }
         }
         timer.tick();
-        if (ConfigManager.get().showTimer) {
-            for (ServerPlayer player : server.getPlayerList().getPlayers()) {
-                timer.showTo(player);
-            }
+        for (ServerPlayer player : server.getPlayerList().getPlayers()) {
+            timer.showTo(player);
         }
         switch (challenge) {
             case "classic" -> {

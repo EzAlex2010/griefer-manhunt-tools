@@ -8,7 +8,6 @@ public class Config {
     public boolean showTeamColors = true;
     public boolean giveHuntersCompass = true;
     public boolean hunterFriendlyFire = true;
-    public boolean showTimer = true;
     public Long timerLength = 7200L;
 
     public void write(RegistryFriendlyByteBuf buf) {
@@ -17,7 +16,6 @@ public class Config {
         buf.writeBoolean(showTeamColors);
         buf.writeBoolean(giveHuntersCompass);
         buf.writeBoolean(hunterFriendlyFire);
-        buf.writeBoolean(showTimer);
         buf.writeLong(timerLength);
     }
 
@@ -29,7 +27,6 @@ public class Config {
         config.showTeamColors = buf.readBoolean();
         config.giveHuntersCompass = buf.readBoolean();
         config.hunterFriendlyFire = buf.readBoolean();
-        config.showTimer = buf.readBoolean();
         config.timerLength = buf.readLong();
 
         return config;

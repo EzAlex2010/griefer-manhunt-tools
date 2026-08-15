@@ -7,23 +7,36 @@ import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextColor;
 
-public class ConfigButton extends AbstractWidget {
-    public ConfigButton(int x, int y, int width, int height, Component message, Runnable onClick) {
-        super(x, y, width, height, message);
-        this.onClick = onClick;
+public class ConfigCheckbox extends AbstractWidget {
+    public ConfigCheckbox(int x, int y, int width, int height, Component message , boolean toggled, boolean fillbg) {
+        super(x + 50, y, width, height, message);
+        this.toggled = toggled;
+        this.fillbg = fillbg;
     }
 
-    private final Runnable onClick;
+    private boolean toggled;
+    private final boolean fillbg;
 
     @Override
     public void onClick(final MouseButtonEvent event, final boolean doubleClick) {
-        onClick.run();
+        toggle();
     }
 
     @Override
     protected void extractWidgetRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
         int backgroundColor = isHovered() ? UIStyle.PANEL_HOVER : UIStyle.PANEL;
+
+        if (fillbg) {
+            graphics.fill(
+                    0,
+                    getY() - 5,
+                    graphics.guiWidth(),
+                    getY() + height + 5,
+                    UIStyle.BACKGROUND
+            );
+        }
 
         graphics.fill(
                 getX(),
@@ -34,7 +47,7 @@ public class ConfigButton extends AbstractWidget {
         );
         graphics.centeredText(
                 Minecraft.getInstance().font,
-                getMessage(),
+                toggled ? Component.literal("True").withColor(TextColor.GREEN) : Component.literal("False").withColor(TextColor.RED),
                 getX() + width / 2,
                 getY() + 6,
                 UIStyle.TEXT
@@ -46,11 +59,26 @@ public class ConfigButton extends AbstractWidget {
                 height,
                 UIStyle.BORDER
         );
+        graphics.text(
+                Minecraft.getInstance().font,
+                getMessage(),
+                getX() - 170,
+                getY() + 6,
+                UIStyle.TEXT
+        );
     }
 
     @Override
     protected void updateWidgetNarration(NarrationElementOutput output) {
 
+    }
+
+    private void toggle() {
+        toggled = !toggled;
+    }
+
+    public boolean isToggled() {
+        return toggled;
     }
 
 }

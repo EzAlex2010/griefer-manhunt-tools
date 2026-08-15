@@ -35,11 +35,6 @@ public class ManhuntCommands {
                             .then(Commands.literal("remove_runner").executes(ManhuntCommands::clear_runner))
                             .then(Commands.literal("set")
                                     .then(boolSetting(
-                                            "show_timer",
-                                            "Show Timer",
-                                            b -> ConfigManager.get().showTimer = b)
-                                    )
-                                    .then(boolSetting(
                                             "show_team_colors",
                                             "Show Team Colors",
                                             b -> ConfigManager.get().showTeamColors = b)

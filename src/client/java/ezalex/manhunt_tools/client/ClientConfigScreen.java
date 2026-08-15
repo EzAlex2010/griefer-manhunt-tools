@@ -1,9 +1,9 @@
 package ezalex.manhunt_tools.client;
 
+import ezalex.manhunt_tools.client.widgets.ConfigButton;
+import ezalex.manhunt_tools.client.widgets.ConfigCheckbox;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.components.Checkbox;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 
@@ -15,58 +15,62 @@ public class ClientConfigScreen extends Screen {
         this.parent = parent;
     }
 
-    private Checkbox showTimerBox;
-    private Checkbox showEndScreenBox;
+    private ConfigCheckbox showTimerBox;
+    private ConfigCheckbox showEndScreenBox;
 
     @Override
     protected void init() {
         super.init();
 
         int y = 30;
-        int y_space = 20;
-
-        this.addRenderableWidget(
-                Button.builder(
-                        Component.literal("Select Challenge"),
-                        button -> {
-                            save();
-                            Minecraft.getInstance().setScreenAndShow(new ChallengeScreen());
-                        }
-                ).bounds(this.width / 2 - 60, y, 120, 20).build()
-        );
+        int y_space = 30;
 
         y = y + 25;
 
-        showEndScreenBox = Checkbox.builder(Component.literal("Show Challenge End Screen"), this.font)
-                .selected(ClientConfigManager.get().showEndScreen)
-                .pos(this.width / 2 - 100, y)
-                .build();
+        showEndScreenBox = new ConfigCheckbox(
+                this.width / 2,
+                y,
+                80,
+                20,
+                Component.literal("Show End Screen"),
+                ClientConfigManager.get().showEndScreen,
+                true
+        );
 
         y = y + y_space;
 
-        showTimerBox = Checkbox.builder(Component.literal("Show Timer On Action Bar"), this.font)
-                .selected(ClientConfigManager.get().showTimer)
-                .pos(this.width / 2 - 100, y)
-                .build();
+        showTimerBox = new ConfigCheckbox(
+                this.width / 2,
+                y,
+                80,
+                20,
+                Component.literal("Show Timer On Actionbar"),
+                ClientConfigManager.get().showTimer,
+                false
+        );
 
 
         this.addRenderableWidget(showEndScreenBox);
         this.addRenderableWidget(showTimerBox);
         this.addRenderableWidget(
-                Button.builder(
+                new ConfigButton(
+                        this.width / 2 - 120,
+                        this.height - 30,
+                        120,
+                        20,
                         Component.literal("Save"),
-                        button -> {
-                            save();
-                        }
-                ).bounds(this.width / 2 - 120, this.height - 30, 120, 20).build()
+                        this::save
+                )
         );
         this.addRenderableWidget(
-                Button.builder(
+                new ConfigButton(
+                        this.width / 2 + 20,
+                        this.height - 30,
+                        120,
+                        20,
                         Component.literal("Close"),
-                        button -> {
-                            this.onClose();
-                        }
-                ).bounds(this.width / 2 + 20, this.height - 30, 120, 20).build()
+                        this::onClose
+                )
         );
     }
 
@@ -74,17 +78,12 @@ public class ClientConfigScreen extends Screen {
     public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
         super.extractRenderState(graphics, mouseX, mouseY, delta);
 
-        String title = "Config";
-
-        int titleWidth = this.font.width(title);
-
-        graphics.text(
+        graphics.centeredText(
                 this.font,
-                title,
-                this.width / 2 - titleWidth / 2,
+                "Client Config",
+                this.width / 2,
                 20,
-                0xFFFFFFFF,
-                true
+                0xFFFFFFFF
         );
     }
 
@@ -95,8 +94,8 @@ public class ClientConfigScreen extends Screen {
 
     private void save() {
         ClientConfig config = ClientConfigManager.get();
-        config.showEndScreen = showEndScreenBox.selected();
-        config.showTimer = showTimerBox.selected();
+        config.showEndScreen = showEndScreenBox.isToggled();
+        config.showTimer = showTimerBox.isToggled();
         ClientConfigManager.save();
     }
 }

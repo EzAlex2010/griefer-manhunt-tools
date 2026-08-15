@@ -1,5 +1,6 @@
 package ezalex.manhunt_tools.client;
 
+import ezalex.manhunt_tools.client.widgets.ConfigButton;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
@@ -20,68 +21,92 @@ public class ChallengeScreen extends Screen {
         int y_space = 25;
 
         this.addRenderableWidget(
-                Button.builder(
+                new ConfigButton(
+                        20,
+                        y,
+                        120,
+                        20,
                         Component.literal("Classic"),
-                        button -> {
+                        () -> {
                             ServerConfigCopy.get().challenge = "classic";
                             this.onClose();
                         }
-                ).bounds(this.width / 2 - 60, y, 120, 20).build()
+                )
         );
 
         y = y + y_space;
 
         this.addRenderableWidget(
-                Button.builder(
+                new ConfigButton(
+                        20,
+                        y,
+                        120,
+                        20,
                         Component.literal("Tank vs Assassins"),
-                        button -> {
+                        () -> {
                             ServerConfigCopy.get().challenge = "tva";
                             this.onClose();
                         }
-                ).bounds(this.width / 2 - 60, y, 120, 20).build()
+                )
         );
 
         y = y + y_space;
 
         this.addRenderableWidget(
-                Button.builder(
+                new ConfigButton(
+                        20,
+                        y,
+                        120,
+                        20,
                         Component.literal("Netherite Assassins"),
-                        button -> {
+                        () -> {
                             ServerConfigCopy.get().challenge = "netherite_assassins";
                             this.onClose();
                         }
-                ).bounds(this.width / 2 - 60, y, 120, 20).build()
+                )
         );
 
         y = y + y_space;
 
         this.addRenderableWidget(
-                Button.builder(
+                new ConfigButton(
+                        20,
+                        y,
+                        120,
+                        20,
                         Component.literal("Manhunt Tag"),
-                        button -> {
+                        () -> {
                             ServerConfigCopy.get().challenge = "tag";
                             this.onClose();
                         }
-                ).bounds(this.width / 2 - 60, y, 120, 20).build()
+                )
         );
 
         y = y + y_space;
 
         this.addRenderableWidget(
-                Button.builder(
+                new ConfigButton(
+                        20,
+                        y,
+                        120,
+                        20,
                         Component.literal("Time Challenge"),
-                        button -> {
+                        () -> {
                             ServerConfigCopy.get().challenge = "timed";
                             this.onClose();
                         }
-                ).bounds(this.width / 2 - 60, y, 120, 20).build()
+                )
         );
 
         this.addRenderableWidget(
-                Button.builder(
+                new ConfigButton(
+                        this.width / 2 - 60,
+                        this.height - 30,
+                        120,
+                        20,
                         Component.literal("Back"),
-                        button -> this.onClose()
-                ).bounds(this.width / 2 - 60, this.height - 30, 120, 20).build()
+                        this::onClose
+                )
         );
     }
 
