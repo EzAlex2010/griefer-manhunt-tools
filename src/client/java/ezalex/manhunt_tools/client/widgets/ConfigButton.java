@@ -22,8 +22,7 @@ public class ConfigButton extends AbstractWidget {
                 getY() + height,
                 backgroundColor
         );
-        int textXpos = getX() + width / 2 + getMessage().toString().length();
-        graphics.text(
+        graphics.centeredText(
                 Minecraft.getInstance().font,
                 getMessage(),
                 getX() + width / 2,
