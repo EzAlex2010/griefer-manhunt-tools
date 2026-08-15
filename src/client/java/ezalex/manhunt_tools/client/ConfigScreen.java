@@ -1,5 +1,6 @@
 package ezalex.manhunt_tools.client;
 
+import ezalex.manhunt_tools.client.widgets.ConfigButton;
 import ezalex.manhunt_tools.networking.RequestConfigPayload;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.Minecraft;
@@ -20,17 +21,24 @@ public class ConfigScreen extends Screen {
         super.init();
 
         this.addRenderableWidget(
-                Button.builder(
-                        Component.literal("Client Settings"),
-                        button -> Minecraft.getInstance().setScreenAndShow(
-                                new ClientConfigScreen(this)
-                        )
-                ).bounds(
+                new ConfigButton(
                         this.width / 2 - 100,
                         60,
                         200,
-                        20
-                ).build()
+                        20,
+                        Component.literal("Client Settings")
+                )
+//                Button.builder(
+//                        Component.literal("Client Settings"),
+//                        button -> Minecraft.getInstance().setScreenAndShow(
+//                                new ClientConfigScreen(this)
+//                        )
+//                ).bounds(
+//                        this.width / 2 - 100,
+//                        60,
+//                        200,
+//                        20
+//                ).build()
         );
 
         this.addRenderableWidget(

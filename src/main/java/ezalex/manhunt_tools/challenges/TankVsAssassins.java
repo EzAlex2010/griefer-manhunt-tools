@@ -34,11 +34,8 @@ public class TankVsAssassins {
         ItemStack stack = new ItemStack(item);
 
         // Unbreakable
-        stack.set(DataComponents.UNBREAKABLE, Unit.INSTANCE);
+        if (!runner) stack.set(DataComponents.UNBREAKABLE, Unit.INSTANCE);
         // Curse of Binding
-        Holder<Enchantment> binding = server.registryAccess()
-                .lookupOrThrow(net.minecraft.core.registries.Registries.ENCHANTMENT)
-                .getOrThrow(Enchantments.BINDING_CURSE);
         Holder<Enchantment> vanishing = server.registryAccess()
                 .lookupOrThrow(net.minecraft.core.registries.Registries.ENCHANTMENT)
                 .getOrThrow(Enchantments.VANISHING_CURSE);
@@ -46,7 +43,6 @@ public class TankVsAssassins {
                 .lookupOrThrow(net.minecraft.core.registries.Registries.ENCHANTMENT)
                 .getOrThrow(Enchantments.PROTECTION);
         ItemEnchantments.Mutable enchants = new ItemEnchantments.Mutable(ItemEnchantments.EMPTY);
-        if (runner) enchants.set(binding, 1);
         enchants.set(vanishing, 1);
         if (runner) enchants.set(protection, 4);
 
