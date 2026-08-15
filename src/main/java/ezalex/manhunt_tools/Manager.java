@@ -75,6 +75,10 @@ public class Manager {
         }
         Manager.challengeRunning = true;
         GameData.save(server);
+        for (ServerPlayer player : server.getPlayerList().getPlayers()) {
+            player.setExperiencePoints(0);
+            player.setExperienceLevels(0);
+        }
     }
 
     public static void tick(MinecraftServer server) {
@@ -183,6 +187,8 @@ public class Manager {
     public static void clearInventories(MinecraftServer server) {
         for (ServerPlayer player : server.getPlayerList().getPlayers()) {
             player.getInventory().clearContent();
+            player.setExperiencePoints(0);
+            player.setExperienceLevels(0);
         }
     }
 }
