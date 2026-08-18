@@ -15,21 +15,25 @@ import java.util.List;
 
 public class ConfigRow extends AbstractContainerWidget {
     private final AbstractWidget widget;
+    private boolean fillbg = true;
 
-    public ConfigRow(int x, int y, int width, int height, Component label, AbstractWidget child) {
+    public ConfigRow(int x, int y, int width, int height, Component label, AbstractWidget child, boolean fillbg) {
         super(x, y, width, height, label);
         this.widget = child;
+        this.fillbg = fillbg;
     }
     @Override
     public void extractWidgetRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
         // Row background
-        graphics.fill(
-                getX(),
-                getY(),
-                getX() + width,
-                getY() + height,
-                UIStyle.BACKGROUND
-        );
+        if (fillbg) {
+            graphics.fill(
+                    getX(),
+                    getY(),
+                    getX() + width,
+                    getY() + height,
+                    UIStyle.BACKGROUND
+            );
+        }
 
         // Label
         graphics.text(

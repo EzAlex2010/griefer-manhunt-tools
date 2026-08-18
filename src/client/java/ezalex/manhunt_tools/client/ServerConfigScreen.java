@@ -25,11 +25,16 @@ public class ServerConfigScreen extends Screen {
 
     Config config = ServerConfigCopy.get();
 
+    private ConfigRow selectChallengeRow;
     private ConfigButton selectChallengeButton;
-    private ConfigRow compassIntervalBox;
-    private ConfigCheckbox showTeamColorsBox;
-    private ConfigCheckbox giveHuntersCompassBox;
-    private ConfigCheckbox hunterFriendlyFireBox;
+    private ConfigRow compassIntervalRow;
+    private EditBox compassIntervalBox;
+    private ConfigRow showTeamColorsRow;
+    private ConfigCheckbox showTeamColorsButton;
+    private ConfigRow giveHuntersCompassRow;
+    private ConfigCheckbox giveHuntersCompassButton;
+    private ConfigRow hunterFriendlyFireRow;
+    private ConfigCheckbox hunterFriendlyFireButton;
     private EditBox TimeBox;
 
     private int scrollOffset = 0;
@@ -45,65 +50,107 @@ public class ServerConfigScreen extends Screen {
         int y_space = 30;
 
         selectChallengeButton = new ConfigButton(
-                this.width / 2 - 60,
-                y,
-                120,
+                this.width / 2 + 50,
+                0,
+                80,
                 20,
-                Component.literal("Select Challenge"),
+                Component.literal("Open Select"),
                 () -> {
                     save();
                     Minecraft.getInstance().setScreenAndShow(new ChallengeScreen());
                 }
         );
 
-        this.addRenderableWidget(selectChallengeButton);
-
-        y = y + y_space;
-
-        compassIntervalBox = new ConfigRow(
+        selectChallengeRow = new ConfigRow(
                 0,
                 y,
                 this.width,
                 30,
-                Component.literal("Compass Update Interval"),
-
-        );
-        compassIntervalBox.getWidget().setValue(
-                Integer.toString(config.compassUpdateInterval)
-        );
-        y = y + y_space;
-
-        showTeamColorsBox = new ConfigCheckbox(
-                this.width / 2,
-                y,
-                80,
-                20,
-                Component.literal("Show Team Colors"),
-                config.showTeamColors,
+                Component.literal("Select Challenge"),
+                selectChallengeButton,
                 true
         );
 
         y = y + y_space;
 
-        giveHuntersCompassBox = new ConfigCheckbox(
-                this.width / 2,
-                y,
+        compassIntervalBox = new EditBox(
+                this.font,
+                this.width / 2 + 50,
+                0,
                 80,
                 20,
-                Component.literal("Give Hunters Compass"),
-                config.giveHuntersCompass,
+                Component.literal("")
+        );
+
+        compassIntervalRow = new ConfigRow(
+                0,
+                y,
+                this.width,
+                30,
+                Component.literal("Compass Update Interval"),
+                compassIntervalBox,
+                false
+        );
+        compassIntervalBox.setValue(
+                Integer.toString(config.compassUpdateInterval)
+        );
+        y = y + y_space;
+
+        showTeamColorsButton = new ConfigCheckbox(
+                this.width / 2  + 50,
+                0,
+                80,
+                20,
+                config.showTeamColors
+        );
+
+        showTeamColorsRow = new ConfigRow(
+                0,
+                y,
+                this.width,
+                30,
+                Component.literal("Show team colors"),
+                showTeamColorsButton,
+                true
+        );
+
+        y = y + y_space;
+
+        giveHuntersCompassButton = new ConfigCheckbox(
+                this.width / 2 + 50,
+                0,
+                80,
+                20,
+                config.giveHuntersCompass
+        );
+
+        giveHuntersCompassRow = new ConfigRow(
+                0,
+                y,
+                this.width,
+                30,
+                Component.literal("Show team colors"),
+                giveHuntersCompassButton,
                 false
         );
 
         y = y + y_space;
 
-        hunterFriendlyFireBox = new ConfigCheckbox(
-                this.width / 2,
-                y,
+        hunterFriendlyFireButton = new ConfigCheckbox(
+                this.width / 2 + 50,
+                0,
                 80,
                 20,
-                Component.literal("Allow Hunter Friendly Fire"),
-                config.hunterFriendlyFire,
+                config.hunterFriendlyFire
+        );
+
+        hunterFriendlyFireRow = new ConfigRow(
+                0,
+                y,
+                this.width,
+                30,
+                Component.literal("Hunter Friendly Fire"),
+                hunterFriendlyFireButton,
                 true
         );
 
@@ -122,11 +169,16 @@ public class ServerConfigScreen extends Screen {
                 Long.toString(config.timerLength)
         );
 
-
+        this.addRenderableWidget(selectChallengeButton);
         this.addRenderableWidget(compassIntervalBox);
-        this.addRenderableWidget(showTeamColorsBox);
-        this.addRenderableWidget(giveHuntersCompassBox);
-        this.addRenderableWidget(hunterFriendlyFireBox);
+        this.addRenderableWidget(showTeamColorsButton);
+        this.addRenderableWidget(giveHuntersCompassButton);
+        this.addRenderableWidget(hunterFriendlyFireButton);
+
+        this.addRenderableWidget(compassIntervalRow);
+        this.addRenderableWidget(showTeamColorsRow);
+        this.addRenderableWidget(giveHuntersCompassRow);
+        this.addRenderableWidget(hunterFriendlyFireRow);
         this.addRenderableWidget(TimeBox);
 
         saveButton = new ConfigButton(
@@ -152,19 +204,19 @@ public class ServerConfigScreen extends Screen {
 
     @Override
     public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
-        selectChallengeButton.setY(40 - scrollOffset);
-        compassIntervalBox.setY(65 - scrollOffset);
-        showTeamColorsBox.setY(100 - scrollOffset);
-        giveHuntersCompassBox.setY(130 - scrollOffset);
-        hunterFriendlyFireBox.setY(160 - scrollOffset);
+        selectChallengeRow.setY(40 - scrollOffset);
+        compassIntervalRow.setY(70 - scrollOffset);
+        showTeamColorsRow.setY(100 - scrollOffset);
+        giveHuntersCompassRow.setY(130 - scrollOffset);
+        hunterFriendlyFireRow.setY(160 - scrollOffset);
         TimeBox.setY(190 - scrollOffset);
 
         graphics.enableScissor(0, 35, this.width, this.height - 35);
-        selectChallengeButton.extractRenderState(graphics, mouseX, mouseY, delta);
-        compassIntervalBox.extractRenderState(graphics, mouseX, mouseY, delta);
-        showTeamColorsBox.extractRenderState(graphics, mouseX, mouseY, delta);
-        giveHuntersCompassBox.extractRenderState(graphics, mouseX, mouseY, delta);
-        hunterFriendlyFireBox.extractRenderState(graphics, mouseX, mouseY, delta);
+        selectChallengeRow.extractRenderState(graphics, mouseX, mouseY, delta);
+        compassIntervalRow.extractRenderState(graphics, mouseX, mouseY, delta);
+        showTeamColorsRow.extractRenderState(graphics, mouseX, mouseY, delta);
+        giveHuntersCompassRow.extractRenderState(graphics, mouseX, mouseY, delta);
+        hunterFriendlyFireRow.extractRenderState(graphics, mouseX, mouseY, delta);
         TimeBox.extractRenderState(graphics, mouseX, mouseY, delta);
         graphics.disableScissor();
 
@@ -194,7 +246,7 @@ public class ServerConfigScreen extends Screen {
         Long time;
 
         try {
-            interval = Integer.parseInt(compassIntervalBox.getWidget().getValue());
+            interval = Integer.parseInt(compassIntervalBox.getValue());
         } catch (NumberFormatException e) {
             interval = 20;
         }
@@ -206,9 +258,9 @@ public class ServerConfigScreen extends Screen {
         }
 
         config.compassUpdateInterval = interval;
-        config.showTeamColors = showTeamColorsBox.isToggled();
-        config.giveHuntersCompass = giveHuntersCompassBox.isToggled();
-        config.hunterFriendlyFire = hunterFriendlyFireBox.isToggled();
+        config.showTeamColors = showTeamColorsButton.isToggled();
+        config.giveHuntersCompass = giveHuntersCompassButton.isToggled();
+        config.hunterFriendlyFire = hunterFriendlyFireButton.isToggled();
         config.timerLength = time;
 
         ClientPlayNetworking.send(new SaveConfigPayload(config));
@@ -219,5 +271,13 @@ public class ServerConfigScreen extends Screen {
         scrollOffset -= verticalAmount * 10;
         scrollOffset = Math.clamp(scrollOffset, 0, 100);
         return true;
+    }
+
+    public int getScollLowerViewportBound() {
+        return this.height - 35;
+    }
+
+    public int getScollUpperViewportBound() {
+        return 35;
     }
 }

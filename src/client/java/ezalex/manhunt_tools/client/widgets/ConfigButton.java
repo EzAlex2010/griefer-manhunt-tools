@@ -18,7 +18,9 @@ public class ConfigButton extends AbstractWidget {
 
     @Override
     public void onClick(final MouseButtonEvent event, final boolean doubleClick) {
-        onClick.run();
+        if (event.y() > 35 && event.y() < Minecraft.getInstance().getWindow().getScreenHeight() - 35) {
+            onClick.run();
+        }
     }
 
     @Override

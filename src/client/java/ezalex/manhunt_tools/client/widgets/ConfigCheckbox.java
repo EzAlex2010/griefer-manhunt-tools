@@ -1,5 +1,6 @@
 package ezalex.manhunt_tools.client.widgets;
 
+import ezalex.manhunt_tools.client.ServerConfigScreen;
 import ezalex.manhunt_tools.client.ui.UIStyle;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -10,33 +11,23 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextColor;
 
 public class ConfigCheckbox extends AbstractWidget {
-    public ConfigCheckbox(int x, int y, int width, int height, Component message , boolean toggled, boolean fillbg) {
-        super(x + 50, y, width, height, message);
+    public ConfigCheckbox(int x, int y, int width, int height, boolean toggled) {
+        super(x, y, width, height, Component.literal(""));
         this.toggled = toggled;
-        this.fillbg = fillbg;
     }
 
     private boolean toggled;
-    private final boolean fillbg;
 
     @Override
     public void onClick(final MouseButtonEvent event, final boolean doubleClick) {
-        toggle();
+        if (event.y() > 35 && event.y() < Minecraft.getInstance().getWindow().getScreenHeight() - 35) {
+            toggle();
+        }
     }
 
     @Override
     protected void extractWidgetRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
         int backgroundColor = isHovered() ? UIStyle.PANEL_HOVER : UIStyle.PANEL;
-
-        if (fillbg) {
-            graphics.fill(
-                    0,
-                    getY() - 5,
-                    graphics.guiWidth(),
-                    getY() + height + 5,
-                    UIStyle.BACKGROUND
-            );
-        }
 
         graphics.fill(
                 getX(),
