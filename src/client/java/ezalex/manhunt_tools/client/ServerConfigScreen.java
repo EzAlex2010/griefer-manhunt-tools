@@ -66,7 +66,7 @@ public class ServerConfigScreen extends Screen {
                 this.width,
                 30,
                 Component.literal("Compass Update Interval"),
-                this.font
+
         );
         compassIntervalBox.getWidget().setValue(
                 Integer.toString(config.compassUpdateInterval)
