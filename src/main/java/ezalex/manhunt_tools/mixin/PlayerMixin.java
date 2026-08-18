@@ -13,27 +13,18 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(Player.class)
-public class PlayerMixin {
-    @Redirect(
-            method = "dropEquipment",
-            at = @At(
-                    value = "INVOKE",
-                    target = "Lnet/minecraft/world/entity/player/Inventory;dropAll()V"
-            )
-    )
-    private void customKeepInventory(Inventory inventory) {
-        ServerPlayer player = (ServerPlayer) (Object) this;
-
-        if (!shouldKeepInventory(player)) {
-            inventory.dropAll();
-        }
-    }
-    private boolean shouldKeepInventory(ServerPlayer player) {
-        if (TeamManager.isHunter(player)) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-}
+//@Mixin(ServerPlayer.class)
+//public class PlayerMixin {
+//    @Redirect(
+//            method = "die",
+//            at = @At(
+//                    value = "INVOKE",
+//                    target = "Lnet/minecraft/server/level/ServerPlayer;dropAllDeathLoot(Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/world/damagesource/DamageSource;)V"
+//            )
+//    )
+//    private void customDropAllDeathLoot(ServerPlayer player, ServerLevel level, DamageSource source) {
+//        if (!TeamManager.isHunter(player)) {
+//            ((LivingEntityInvoker) player).invokeDropAllDeathLoot(level, source);
+//        }
+//    }
+//}

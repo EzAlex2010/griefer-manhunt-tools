@@ -35,7 +35,10 @@ public class ServerConfigScreen extends Screen {
     private ConfigCheckbox giveHuntersCompassButton;
     private ConfigRow hunterFriendlyFireRow;
     private ConfigCheckbox hunterFriendlyFireButton;
+    private ConfigRow TimeRow;
     private EditBox TimeBox;
+    private ConfigRow keepInventoryRow;
+    private ConfigCheckbox keepInventoryButton;
 
     private int scrollOffset = 0;
 
@@ -158,15 +161,43 @@ public class ServerConfigScreen extends Screen {
 
         TimeBox = new EditBox(
                 this.font,
-                (this.width / 2),
-                y,
-                60,
+                (this.width / 2) + 50,
+                0,
+                80,
                 20,
-                Component.literal("Compass Interval")
+                Component.literal("")
         );
-
+        TimeRow = new ConfigRow(
+                0,
+                y,
+                this.width,
+                30,
+                Component.literal("Time In Seconds"),
+                TimeBox,
+                false
+        );
         TimeBox.setValue(
                 Long.toString(config.timerLength)
+        );
+
+        y = y + y_space;
+
+        keepInventoryButton = new ConfigCheckbox(
+                this.width / 2 + 50,
+                0,
+                80,
+                20,
+                config.keepInventory
+        );
+
+        keepInventoryRow = new ConfigRow(
+                0,
+                y,
+                this.width,
+                30,
+                Component.literal("Keep Inventory"),
+                keepInventoryButton,
+                true
         );
 
         this.addRenderableWidget(selectChallengeButton);
@@ -174,12 +205,15 @@ public class ServerConfigScreen extends Screen {
         this.addRenderableWidget(showTeamColorsButton);
         this.addRenderableWidget(giveHuntersCompassButton);
         this.addRenderableWidget(hunterFriendlyFireButton);
+        this.addRenderableWidget(TimeBox);
+        this.addRenderableWidget(keepInventoryButton);
 
         this.addRenderableWidget(compassIntervalRow);
         this.addRenderableWidget(showTeamColorsRow);
         this.addRenderableWidget(giveHuntersCompassRow);
         this.addRenderableWidget(hunterFriendlyFireRow);
-        this.addRenderableWidget(TimeBox);
+        this.addRenderableWidget(TimeRow);
+        this.addRenderableWidget(keepInventoryRow);
 
         saveButton = new ConfigButton(
                 this.width / 2 - 140,
@@ -209,7 +243,7 @@ public class ServerConfigScreen extends Screen {
         showTeamColorsRow.setY(100 - scrollOffset);
         giveHuntersCompassRow.setY(130 - scrollOffset);
         hunterFriendlyFireRow.setY(160 - scrollOffset);
-        TimeBox.setY(190 - scrollOffset);
+        TimeRow.setY(190 - scrollOffset);
 
         graphics.enableScissor(0, 35, this.width, this.height - 35);
         selectChallengeRow.extractRenderState(graphics, mouseX, mouseY, delta);
@@ -217,7 +251,7 @@ public class ServerConfigScreen extends Screen {
         showTeamColorsRow.extractRenderState(graphics, mouseX, mouseY, delta);
         giveHuntersCompassRow.extractRenderState(graphics, mouseX, mouseY, delta);
         hunterFriendlyFireRow.extractRenderState(graphics, mouseX, mouseY, delta);
-        TimeBox.extractRenderState(graphics, mouseX, mouseY, delta);
+        TimeRow.extractRenderState(graphics, mouseX, mouseY, delta);
         graphics.disableScissor();
 
         closeButton.extractRenderState(graphics, mouseX, mouseY, delta);
