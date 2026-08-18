@@ -6,6 +6,7 @@ import ezalex.manhunt_tools.TeamManager;
 import ezalex.manhunt_tools.Timer;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Unit;
@@ -33,6 +34,9 @@ public class TankVsAssassins {
     private static ItemStack createArmor(Item item, MinecraftServer server, boolean runner) {
         ItemStack stack = new ItemStack(item);
 
+        // Tracking Data
+        CompoundTag tag = new CompoundTag();
+        tag.putBoolean("from_griefer_manhunt_tools", true);
         // Unbreakable
         if (!runner) stack.set(DataComponents.UNBREAKABLE, Unit.INSTANCE);
         // Curse of Binding
@@ -54,6 +58,9 @@ public class TankVsAssassins {
     private static ItemStack createHunterSword(MinecraftServer server) {
         ItemStack stack = new ItemStack(Items.DIAMOND_SWORD);
 
+        // Tracking Data
+        CompoundTag tag = new CompoundTag();
+        tag.putBoolean("from_griefer_manhunt_tools", true);
         // Unbreakable
         stack.set(DataComponents.UNBREAKABLE, Unit.INSTANCE);
 

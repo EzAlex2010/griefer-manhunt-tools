@@ -29,7 +29,21 @@ public class ChallengeScreen extends Screen {
                         Component.literal("Classic"),
                         () -> {
                             ServerConfigCopy.get().challenge = "classic";
-                            this.onClose();
+                        }
+                )
+        );
+
+        y = y + y_space;
+
+        this.addRenderableWidget(
+                new ConfigButton(
+                        20,
+                        y,
+                        120,
+                        20,
+                        Component.literal("Survive"),
+                        () -> {
+                            ServerConfigCopy.get().challenge = "survive";
                         }
                 )
         );
@@ -45,7 +59,6 @@ public class ChallengeScreen extends Screen {
                         Component.literal("Tank vs Assassins"),
                         () -> {
                             ServerConfigCopy.get().challenge = "tva";
-                            this.onClose();
                         }
                 )
         );
@@ -61,7 +74,6 @@ public class ChallengeScreen extends Screen {
                         Component.literal("Netherite Assassins"),
                         () -> {
                             ServerConfigCopy.get().challenge = "netherite_assassins";
-                            this.onClose();
                         }
                 )
         );
@@ -77,7 +89,6 @@ public class ChallengeScreen extends Screen {
                         Component.literal("Manhunt Tag"),
                         () -> {
                             ServerConfigCopy.get().challenge = "tag";
-                            this.onClose();
                         }
                 )
         );
@@ -93,7 +104,6 @@ public class ChallengeScreen extends Screen {
                         Component.literal("Time Challenge"),
                         () -> {
                             ServerConfigCopy.get().challenge = "timed";
-                            this.onClose();
                         }
                 )
         );

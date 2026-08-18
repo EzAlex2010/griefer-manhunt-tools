@@ -3,6 +3,7 @@ package ezalex.manhunt_tools.client;
 import ezalex.manhunt_tools.Config;
 import ezalex.manhunt_tools.client.widgets.ConfigButton;
 import ezalex.manhunt_tools.client.widgets.ConfigCheckbox;
+import ezalex.manhunt_tools.client.widgets.ConfigRow;
 import ezalex.manhunt_tools.networking.SaveConfigPayload;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.Minecraft;
@@ -24,11 +25,17 @@ public class ServerConfigScreen extends Screen {
 
     Config config = ServerConfigCopy.get();
 
-    private EditBox compassIntervalBox;
+    private ConfigButton selectChallengeButton;
+    private ConfigRow compassIntervalBox;
     private ConfigCheckbox showTeamColorsBox;
     private ConfigCheckbox giveHuntersCompassBox;
     private ConfigCheckbox hunterFriendlyFireBox;
     private EditBox TimeBox;
+
+    private int scrollOffset = 0;
+
+    private ConfigButton saveButton;
+    private ConfigButton closeButton;
 
     @Override
     protected void init() {
@@ -37,35 +44,33 @@ public class ServerConfigScreen extends Screen {
         int y = 40;
         int y_space = 30;
 
-        this.addRenderableWidget(
-                new ConfigButton(
-                        this.width / 2 - 60,
-                        y,
-                        120,
-                        20,
-                        Component.literal("Select Challenge"),
-                        () -> {
-                            save();
-                            Minecraft.getInstance().setScreenAndShow(new ChallengeScreen());
-                        }
-                )
+        selectChallengeButton = new ConfigButton(
+                this.width / 2 - 60,
+                y,
+                120,
+                20,
+                Component.literal("Select Challenge"),
+                () -> {
+                    save();
+                    Minecraft.getInstance().setScreenAndShow(new ChallengeScreen());
+                }
         );
+
+        this.addRenderableWidget(selectChallengeButton);
 
         y = y + y_space;
 
-        compassIntervalBox = new EditBox(
-                this.font,
-                (this.width / 2),
+        compassIntervalBox = new ConfigRow(
+                0,
                 y,
-                60,
-                20,
-                Component.literal("Compass Interval")
+                this.width,
+                30,
+                Component.literal("Compass Update Interval"),
+                this.font
         );
-
-        compassIntervalBox.setValue(
+        compassIntervalBox.getWidget().setValue(
                 Integer.toString(config.compassUpdateInterval)
         );
-
         y = y + y_space;
 
         showTeamColorsBox = new ConfigCheckbox(
@@ -123,34 +128,50 @@ public class ServerConfigScreen extends Screen {
         this.addRenderableWidget(giveHuntersCompassBox);
         this.addRenderableWidget(hunterFriendlyFireBox);
         this.addRenderableWidget(TimeBox);
-        this.addRenderableWidget(
-                new ConfigButton(
-                        this.width / 2 - 140,
-                        this.height - 30,
-                        120,
-                        20,
-                        Component.literal("Save"),
-                        this::save
-                )
+
+        saveButton = new ConfigButton(
+                this.width / 2 - 140,
+                this.height - 30,
+                120,
+                20,
+                Component.literal("Save"),
+                this::save
         );
-        this.addRenderableWidget(
-                new ConfigButton(
-                        this.width / 2 + 20,
-                        this.height - 30,
-                        120,
-                        20,
-                        Component.literal("Close"),
-                        this::onClose
-                )
+        closeButton = new ConfigButton(
+                this.width / 2 + 20,
+                this.height - 30,
+                120,
+                20,
+                Component.literal("Close"),
+                this::onClose
         );
+
+        this.addRenderableWidget(saveButton);
+        this.addRenderableWidget(closeButton);
     }
 
     @Override
     public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
-        super.extractRenderState(graphics, mouseX, mouseY, delta);
+        selectChallengeButton.setY(40 - scrollOffset);
+        compassIntervalBox.setY(65 - scrollOffset);
+        showTeamColorsBox.setY(100 - scrollOffset);
+        giveHuntersCompassBox.setY(130 - scrollOffset);
+        hunterFriendlyFireBox.setY(160 - scrollOffset);
+        TimeBox.setY(190 - scrollOffset);
+
+        graphics.enableScissor(0, 35, this.width, this.height - 35);
+        selectChallengeButton.extractRenderState(graphics, mouseX, mouseY, delta);
+        compassIntervalBox.extractRenderState(graphics, mouseX, mouseY, delta);
+        showTeamColorsBox.extractRenderState(graphics, mouseX, mouseY, delta);
+        giveHuntersCompassBox.extractRenderState(graphics, mouseX, mouseY, delta);
+        hunterFriendlyFireBox.extractRenderState(graphics, mouseX, mouseY, delta);
+        TimeBox.extractRenderState(graphics, mouseX, mouseY, delta);
+        graphics.disableScissor();
+
+        closeButton.extractRenderState(graphics, mouseX, mouseY, delta);
+        saveButton.extractRenderState(graphics, mouseX, mouseY, delta);
 
         String title = "Config";
-
         int titleWidth = this.font.width(title);
 
         graphics.text(
@@ -173,7 +194,7 @@ public class ServerConfigScreen extends Screen {
         Long time;
 
         try {
-            interval = Integer.parseInt(compassIntervalBox.getValue());
+            interval = Integer.parseInt(compassIntervalBox.getWidget().getValue());
         } catch (NumberFormatException e) {
             interval = 20;
         }
@@ -191,5 +212,12 @@ public class ServerConfigScreen extends Screen {
         config.timerLength = time;
 
         ClientPlayNetworking.send(new SaveConfigPayload(config));
+    }
+
+    @Override
+    public boolean mouseScrolled(double mouseX, double mouseY, double horizontalAmount, double verticalAmount) {
+        scrollOffset -= verticalAmount * 10;
+        scrollOffset = Math.clamp(scrollOffset, 0, 100);
+        return true;
     }
 }

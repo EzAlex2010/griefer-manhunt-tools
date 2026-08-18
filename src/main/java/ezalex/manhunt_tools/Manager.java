@@ -2,6 +2,7 @@ package ezalex.manhunt_tools;
 
 import ezalex.manhunt_tools.challenges.Classic;
 import ezalex.manhunt_tools.challenges.NetheriteAssassins;
+import ezalex.manhunt_tools.challenges.Survive;
 import ezalex.manhunt_tools.challenges.TankVsAssassins;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.minecraft.ChatFormatting;
@@ -72,6 +73,9 @@ public class Manager {
             case "tva" -> {
                 TankVsAssassins.start(server);
             }
+            case "survive" -> {
+                Survive.start(server);
+            }
         }
         Manager.challengeRunning = true;
         GameData.save(server);
@@ -129,6 +133,9 @@ public class Manager {
                 case "tva" -> {
                     TankVsAssassins.preChallengeTick(server);
                 }
+                case "survive" -> {
+                    Survive.preChallengeTick(server);
+                }
             }
         }
     }
@@ -155,6 +162,9 @@ public class Manager {
             case "tva" -> {
                 TankVsAssassins.tick(server);
             }
+            case "survive" -> {
+                Survive.tick(server);
+            }
         }
     }
 
@@ -166,7 +176,7 @@ public class Manager {
             case "netherite_assassins" -> {
                 GameDisplay.hunterWin(server);
             }
-            case "tva" -> {
+            case "tva", "survive" -> {
                 GameDisplay.runnerWin(server);
             }
         }
@@ -175,7 +185,7 @@ public class Manager {
     public static void runnerDeath(MinecraftServer server) {
         GrieferManhuntTools.LOGGER.info("Runner Died");
         switch (challenge) {
-            case "classic", "tva" -> {
+            case "classic", "tva", "survive" -> {
                 GameDisplay.hunterWin(server);
             }
             case "netherite_assassins" -> {

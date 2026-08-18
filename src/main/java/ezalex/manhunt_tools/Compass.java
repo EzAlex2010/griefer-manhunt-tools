@@ -42,6 +42,7 @@ public class Compass {
         );
         CompoundTag tag = new CompoundTag();
         tag.putBoolean("player_tracker", true);
+        tag.putBoolean("from_griefer_manhunt_tools", true);
 
         ItemStack compass = new ItemStack(Items.COMPASS);
         compass.set(DataComponents.LODESTONE_TRACKER, new LodestoneTracker(Optional.of(location),false));
@@ -168,9 +169,7 @@ public class Compass {
     public static boolean isTrackingCompass(ItemStack stack) {
         CustomData data = stack.get(DataComponents.CUSTOM_DATA);
 
-        return stack.is(Items.COMPASS)
-                && data != null
-                && data.copyTag().getBooleanOr("player_tracker", false);
+        return stack.is(Items.COMPASS) && data != null && data.copyTag().getBooleanOr("player_tracker", false);
     }
 
     private static boolean isHasTrackingCompass(boolean hasTrackingCompass, GlobalPos targetPos, ItemStack stack) {

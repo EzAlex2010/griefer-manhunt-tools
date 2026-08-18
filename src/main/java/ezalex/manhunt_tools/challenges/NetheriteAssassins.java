@@ -7,6 +7,7 @@ import ezalex.manhunt_tools.Timer;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Unit;
@@ -27,7 +28,9 @@ public class NetheriteAssassins {
         Manager.getTimer().configureCountdown((ConfigManager.get().timerLength * 20L));
     }
 
-    public static void tick(MinecraftServer server) {}
+    public static void tick(MinecraftServer server) {
+        give_items(server);
+    }
     public static void preChallengeTick(MinecraftServer server) {
         give_items(server);
     }
@@ -35,9 +38,12 @@ public class NetheriteAssassins {
     private static ItemStack createArmor(Item item, MinecraftServer server) {
         ItemStack stack = new ItemStack(item);
 
+        // Tracking Data
+        CompoundTag tag = new CompoundTag();
+        tag.putBoolean("from_griefer_manhunt_tools", true);
         // Unbreakable
         stack.set(DataComponents.UNBREAKABLE, Unit.INSTANCE);
-        // Curse of Binding
+        // Curse of Binding & Vanishing
         Holder<Enchantment> binding = server.registryAccess()
                 .lookupOrThrow(net.minecraft.core.registries.Registries.ENCHANTMENT)
                 .getOrThrow(Enchantments.BINDING_CURSE);
@@ -56,9 +62,12 @@ public class NetheriteAssassins {
     private static ItemStack createSword(MinecraftServer server) {
         ItemStack stack = new ItemStack(Items.NETHERITE_SWORD);
 
+        // Tracking Data
+        CompoundTag tag = new CompoundTag();
+        tag.putBoolean("from_griefer_manhunt_tools", true);
         // Unbreakable
         stack.set(DataComponents.UNBREAKABLE, Unit.INSTANCE);
-
+        // Curse Of Vanishing
         Holder<Enchantment> vanishing = server.registryAccess()
                 .lookupOrThrow(net.minecraft.core.registries.Registries.ENCHANTMENT)
                 .getOrThrow(Enchantments.VANISHING_CURSE);

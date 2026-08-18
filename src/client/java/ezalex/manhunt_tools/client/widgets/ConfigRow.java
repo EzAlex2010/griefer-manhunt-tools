@@ -2,67 +2,71 @@ package ezalex.manhunt_tools.client.widgets;
 
 import ezalex.manhunt_tools.client.ui.UIStyle;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.components.AbstractContainerWidget;
 import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.gui.components.events.GuiEventListener;
+import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.network.chat.Component;
 
-public class ConfigRow {
-    private final int x;
-    private final int y;
-    private final int width;
-    private final int height;
+import java.util.List;
 
-    private final Component label;
+public class ConfigRow extends AbstractContainerWidget {
     private final AbstractWidget widget;
 
-    public ConfigRow(int x, int y, int width, int height, Component label, AbstractWidget widget) {
-        this.x = x;
-        this.y = y;
-        this.width = width;
-        this.height = height;
-
-        this.label = label;
-        this.widget = widget;
+    public ConfigRow(int x, int y, int width, int height, Component label, AbstractWidget child) {
+        super(x, y, width, height, label);
+        this.widget = child;
     }
-
-    public void render(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
+    @Override
+    public void extractWidgetRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
         // Row background
         graphics.fill(
-                x,
-                y,
-                x + width,
-                y + height,
-                UIStyle.PANEL
+                getX(),
+                getY(),
+                getX() + width,
+                getY() + height,
+                UIStyle.BACKGROUND
         );
 
         // Label
         graphics.text(
                 Minecraft.getInstance().font,
-                label,
-                x + 6,
-                y + 6,
+                getMessage(),
+                (this.width / 2) - 170,
+                getY() + 11,
                 UIStyle.TEXT
         );
+
+        widget.setY(getY() + 5);
 
         // Child widget
         widget.extractRenderState(
                 graphics,
                 mouseX,
                 mouseY,
-                partialTick
+                a
         );
+    }
 
-        // Border
-        graphics.outline(
-                x,
-                y,
-                width,
-                height,
-                UIStyle.BORDER
-        );
+    @Override
+    protected void updateWidgetNarration(NarrationElementOutput output) {
+
     }
 
     public AbstractWidget getWidget() {
         return widget;
+    }
+
+    @Override
+    protected int contentHeight() {
+        return 0;
+    }
+
+    @Override
+    public List<? extends GuiEventListener> children() {
+        return List.of();
     }
 }
