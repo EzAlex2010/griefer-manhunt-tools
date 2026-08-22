@@ -5,6 +5,7 @@ import net.minecraft.server.ServerScoreboard;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.scores.PlayerTeam;
 import net.minecraft.world.scores.TeamColor;
+import org.apache.logging.log4j.core.jmx.Server;
 
 import java.util.Optional;
 
@@ -37,7 +38,8 @@ public class TeamManager {
         }
     }
 
-    public static void teamConfigs(ServerScoreboard scoreboard) {
+    public static void updateTeamConfigs(MinecraftServer server) {
+        ServerScoreboard scoreboard = server.getScoreboard();
         PlayerTeam runner = scoreboard.getPlayerTeam("runner");
         PlayerTeam hunters = scoreboard.getPlayerTeam("hunter");
         if (hunters != null && runner != null) {

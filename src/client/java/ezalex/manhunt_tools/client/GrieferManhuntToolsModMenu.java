@@ -2,6 +2,7 @@ package ezalex.manhunt_tools.client;
 
 import com.terraformersmc.modmenu.api.ConfigScreenFactory;
 import com.terraformersmc.modmenu.api.ModMenuApi;
+import ezalex.manhunt_tools.client.screens.ConfigScreen;
 
 public class GrieferManhuntToolsModMenu implements ModMenuApi {
 

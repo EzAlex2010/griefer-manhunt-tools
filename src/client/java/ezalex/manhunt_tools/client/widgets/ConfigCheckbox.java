@@ -1,6 +1,5 @@
 package ezalex.manhunt_tools.client.widgets;
 
-import ezalex.manhunt_tools.client.ServerConfigScreen;
 import ezalex.manhunt_tools.client.ui.UIStyle;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -20,7 +19,7 @@ public class ConfigCheckbox extends AbstractWidget {
 
     @Override
     public void onClick(final MouseButtonEvent event, final boolean doubleClick) {
-        if (event.y() > 35 && event.y() < Minecraft.getInstance().getWindow().getScreenHeight() - 35) {
+        if (event.y() > 35) {
             toggle();
         }
     }

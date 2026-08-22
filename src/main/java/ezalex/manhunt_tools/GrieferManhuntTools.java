@@ -132,7 +132,6 @@ public class GrieferManhuntTools implements ModInitializer {
 		});
 
 		ServerLivingEntityEvents.AFTER_DEATH.register((entity, damageSource) -> {
-			LOGGER.info("AFTER_DEATH");
 			if (entity instanceof ServerPlayer player) {
 				if (TeamManager.isRunner(player)) {
 					MinecraftServer server = player.level().getServer();

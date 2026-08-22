@@ -1,10 +1,10 @@
-package ezalex.manhunt_tools.client;
+package ezalex.manhunt_tools.client.screens;
 
+import ezalex.manhunt_tools.client.ServerConfigCopy;
 import ezalex.manhunt_tools.client.widgets.ConfigButton;
 import ezalex.manhunt_tools.networking.RequestConfigPayload;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 

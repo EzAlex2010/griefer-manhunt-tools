@@ -14,9 +14,12 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.ServerScoreboard;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.permissions.Permissions;
+import net.minecraft.world.level.border.WorldBorder;
+import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.scores.PlayerTeam;
 
 import java.nio.file.Files;
@@ -71,6 +74,9 @@ public class ManhuntCommands {
             );
             dispatcher.register(
                     Commands.literal("timer_control").then(Commands.argument("ticks", IntegerArgumentType.integer(1)).executes(ManhuntCommands::set_time))
+            );
+            dispatcher.register(
+                    Commands.literal("center").requires(source -> source.permissions().hasPermission(Permissions.COMMANDS_ADMIN)).executes(ManhuntCommands::center_worldborder)
             );
         });
     }
@@ -203,6 +209,14 @@ public class ManhuntCommands {
     public static int set_time(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         int ticks = IntegerArgumentType.getInteger(context, "ticks");
         Manager.getTimer().setTicks((long) ticks);
+        return 1;
+    }
+
+    public static int center_worldborder(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+        MinecraftServer server =  context.getSource().getServer();
+        WorldBorder border = server.overworld().getWorldBorder();
+        Vec3 pos = context.getSource().getPosition();
+        border.setCenter(pos.x, pos.z);
         return 1;
     }
 }

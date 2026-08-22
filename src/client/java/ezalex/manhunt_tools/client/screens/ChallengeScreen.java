@@ -1,17 +1,27 @@
-package ezalex.manhunt_tools.client;
+package ezalex.manhunt_tools.client.screens;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
+import com.mojang.serialization.JsonOps;
+import ezalex.manhunt_tools.client.ServerConfigCopy;
 import ezalex.manhunt_tools.client.widgets.ConfigButton;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.ComponentSerialization;
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.mojang.serialization.JsonOps;
+import net.minecraft.resources.Identifier;
 
 public class ChallengeScreen extends Screen {
 
     public ChallengeScreen() {
         super(Component.literal("Challenge Select"));
     }
+
+    private Component description = Component.literal("Select A Challenge To View Its Description");
 
     @Override
     protected void init() {
@@ -29,6 +39,7 @@ public class ChallengeScreen extends Screen {
                         Component.literal("Classic"),
                         () -> {
                             ServerConfigCopy.get().challenge = "classic";
+                            description = loadDescription("classic");
                         }
                 )
         );
@@ -129,15 +140,49 @@ public class ChallengeScreen extends Screen {
     public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
         super.extractRenderState(graphics, mouseX, mouseY, delta);
 
-        int titleWidth = this.font.width("Select Challenge");
+        graphics.centeredText(
+                this.font,
+                Component.literal("Select Challenge"),
+                this.width / 2,
+                20,
+                0xFFFFFFFF
+        );
 
         graphics.text(
                 this.font,
-                "Select Challenge",
-                this.width / 2 - titleWidth / 2,
-                20,
+                description,
+                this.width / 2 - 100,
+                40,
                 0xFFFFFFFF,
                 true
         );
+    }
+
+    private Component loadDescription(String name) {
+        Identifier id = Identifier.fromNamespaceAndPath(
+                "griefer-manhunt-tools",
+                "challenges/" + name + ".json"
+        );
+
+        try {
+            var resource = Minecraft.getInstance()
+                    .getResourceManager()
+                    .getResource(id);
+
+            if (resource.isEmpty()) {
+                return Component.literal("Missing description: " + name);
+            }
+
+            try (var reader = resource.get().openAsReader()) {
+                JsonElement json = JsonParser.parseReader(reader);
+
+                return ComponentSerialization.CODEC
+                        .parse(JsonOps.INSTANCE, json)
+                        .getOrThrow();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Component.literal("Failed to load description: " + name);
+        }
     }
 }

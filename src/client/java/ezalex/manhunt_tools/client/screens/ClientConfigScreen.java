@@ -1,5 +1,7 @@
-package ezalex.manhunt_tools.client;
+package ezalex.manhunt_tools.client.screens;
 
+import ezalex.manhunt_tools.client.ClientConfig;
+import ezalex.manhunt_tools.client.ClientConfigManager;
 import ezalex.manhunt_tools.client.widgets.ConfigButton;
 import ezalex.manhunt_tools.client.widgets.ConfigCheckbox;
 import net.minecraft.client.Minecraft;
@@ -22,36 +24,36 @@ public class ClientConfigScreen extends Screen {
     protected void init() {
         super.init();
 
-//        int y = 30;
-//        int y_space = 30;
-//
-//        y = y + 25;
-//
-//        showEndScreenBox = new ConfigCheckbox(
-//                this.width / 2,
-//                y,
-//                80,
-//                20,
-//                Component.literal("Show End Screen"),
-//                ClientConfigManager.get().showEndScreen,
-//                true
-//        );
-//
-//        y = y + y_space;
-//
-//        showTimerBox = new ConfigCheckbox(
-//                this.width / 2,
-//                y,
-//                80,
-//                20,
-//                Component.literal("Show Timer On Actionbar"),
-//                ClientConfigManager.get().showTimer,
-//                false
-//        );
-//
-//
-//        this.addRenderableWidget(showEndScreenBox);
-//        this.addRenderableWidget(showTimerBox);
+        int y = 30;
+        int y_space = 30;
+
+        y = y + 25;
+
+        showEndScreenBox = new ConfigCheckbox(
+                this.width / 2,
+                y,
+                80,
+                20,
+                Component.literal("Show End Screen"),
+                ClientConfigManager.get().showEndScreen,
+                true
+        );
+
+        y = y + y_space;
+
+        showTimerBox = new ConfigCheckbox(
+                this.width / 2,
+                y,
+                80,
+                20,
+                Component.literal("Show Timer On Actionbar"),
+                ClientConfigManager.get().showTimer,
+                false
+        );
+
+
+        this.addRenderableWidget(showEndScreenBox);
+        this.addRenderableWidget(showTimerBox);
         this.addRenderableWidget(
                 new ConfigButton(
                         this.width / 2 - 120,

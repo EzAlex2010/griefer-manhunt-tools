@@ -4,28 +4,16 @@ import ezalex.manhunt_tools.challenges.Classic;
 import ezalex.manhunt_tools.challenges.NetheriteAssassins;
 import ezalex.manhunt_tools.challenges.Survive;
 import ezalex.manhunt_tools.challenges.TankVsAssassins;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
-import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextColor;
 import net.minecraft.network.protocol.game.ClientboundSetActionBarTextPacket;
-import net.minecraft.network.protocol.game.ClientboundSetSubtitleTextPacket;
-import net.minecraft.network.protocol.game.ClientboundSetTitleTextPacket;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.ServerScoreboard;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.dimension.end.EnderDragonFight;
-import net.minecraft.world.scores.PlayerTeam;
-import net.minecraft.world.scores.TeamColor;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.Objects;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 public class Manager {
     public static int compassUpdateTicks = 0;
@@ -108,7 +96,7 @@ public class Manager {
                 }
             }
         }
-        TeamManager.teamConfigs(server.getScoreboard());
+        //TeamManager.updateTeamConfigs(server);
         if (Manager.challengeRunning) {
             if (TeamManager.validRunnerFound) {
                 whileChallengeRunning();

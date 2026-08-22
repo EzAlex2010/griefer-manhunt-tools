@@ -1,6 +1,9 @@
 package ezalex.manhunt_tools.client;
 
 import ezalex.manhunt_tools.GrieferManhuntTools;
+import ezalex.manhunt_tools.client.screens.ChallengeScreen;
+import ezalex.manhunt_tools.client.screens.ConfigScreen;
+import ezalex.manhunt_tools.client.screens.ServerConfigScreen;
 import ezalex.manhunt_tools.networking.ConfigDataPayload;
 import ezalex.manhunt_tools.networking.EndScreenPayload;
 import ezalex.manhunt_tools.networking.OpenChallengeScreenPayload;

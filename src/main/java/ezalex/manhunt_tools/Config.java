@@ -11,6 +11,7 @@ public class Config {
     public Long timerLength = 7200L;
     public boolean keepInventory = false;
     public int worldBoarderSize = 999999999;
+    public boolean allowHuntersLocatorBar = false;
 
     public void write(RegistryFriendlyByteBuf buf) {
         buf.writeUtf(challenge);
@@ -21,6 +22,7 @@ public class Config {
         buf.writeLong(timerLength);
         buf.writeBoolean(keepInventory);
         buf.writeInt(worldBoarderSize);
+        buf.writeBoolean(allowHuntersLocatorBar);
     }
 
     public static Config read(RegistryFriendlyByteBuf buf) {
@@ -34,6 +36,7 @@ public class Config {
         config.timerLength = buf.readLong();
         config.keepInventory = buf.readBoolean();
         config.worldBoarderSize = buf.readInt();
+        config.allowHuntersLocatorBar = buf.readBoolean();
 
         return config;
     }
