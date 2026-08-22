@@ -1,0 +1,79 @@
+[
+  "A manhunt challenge where a ",
+  {
+    "color": "green",
+    "text": "runner "
+  },
+  {
+    "color": "white",
+    "text": "has to survive for a "
+  },
+  {
+    "color": "yellow",
+    "text": "set time limit, "
+  },
+  {
+    "color": "white",
+    "text": "but every time they "
+  },
+  {
+    "color": "red",
+    "text": "die "
+  },
+  {
+    "color": "white",
+    "text": "due to the "
+  },
+  {
+    "color": "red",
+    "text": "hunters, "
+  },
+  {
+    "color": "white",
+    "text": "or any other causes, the "
+  },
+  {
+    "color": "yellow",
+    "text": "time limit "
+  },
+  {
+    "color": "gold",
+    "text": "increases. "
+  },
+  {
+    "color": "white",
+    "text": "If the timer reaches "
+  },
+  {
+    "color": "gold",
+    "text": "0 seconds, "
+  },
+  {
+    "color": "white",
+    "text": "the "
+  },
+  {
+    "color": "green",
+    "text": "runner wins, "
+  },
+  {
+    "color": "white",
+    "text": "but if it reaches a higher "
+  },
+  {
+    "color": "yellow",
+    "text": "set time limit, "
+  },
+  {
+    "color": "white",
+    "text": "the "
+  },
+  {
+    "color": "red",
+    "text": "hunters "
+  },
+  {
+    "color": "white",
+    "text": "win."
+  }
+]

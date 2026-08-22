@@ -50,6 +50,7 @@ public class Manager {
 
     public static void start(MinecraftServer server) {
         GrieferManhuntTools.LOGGER.info("Starting Game");
+        ConfigManager.setRules();
         Manager.challenge = ConfigManager.get().challenge;
         switch (Manager.challenge) {
             case "classic" -> {
@@ -96,7 +97,6 @@ public class Manager {
                 }
             }
         }
-        //TeamManager.updateTeamConfigs(server);
         if (Manager.challengeRunning) {
             if (TeamManager.validRunnerFound) {
                 whileChallengeRunning();

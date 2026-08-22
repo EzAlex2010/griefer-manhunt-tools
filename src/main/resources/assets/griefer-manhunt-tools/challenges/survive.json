@@ -1,0 +1,32 @@
+[
+  "A very ",
+  {
+    "color": "red",
+    "text": "intense "
+  },
+  {
+    "color": "white",
+    "text": "version of classic manhunt"
+  },
+  ". A ",
+  {
+    "color": "green",
+    "text": "speedrunner"
+  },
+  " has to ",
+  {
+    "color": "yellow",
+    "text": "survive"
+  },
+  " a set amount of ",
+  {
+    "color": "green",
+    "text": "time "
+  },
+  "before ",
+  {
+    "color": "red",
+    "text": "hunters"
+  },
+  " can kill them."
+]

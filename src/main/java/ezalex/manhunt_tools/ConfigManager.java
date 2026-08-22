@@ -61,13 +61,13 @@ public class ConfigManager {
 
     public static void set(Config newConfig) {
         config = newConfig;
-        TeamManager.updateTeamConfigs(server);
-        server.overworld().getWorldBorder().setSize(config.worldBoarderSize);
-        setGameRules();
+        setRules();
         save();
     }
 
-    private static void setGameRules() {
+    public static void setRules() {
+        TeamManager.updateTeamConfigs(server);
+        server.overworld().getWorldBorder().setSize(config.worldBoarderSize);
         GameRules gamerules = server.getGameRules();
         gamerules.set(GameRules.KEEP_INVENTORY, config.keepInventory, server);
         gamerules.set(GameRules.LOCATOR_BAR, config.allowHuntersLocatorBar, server);
