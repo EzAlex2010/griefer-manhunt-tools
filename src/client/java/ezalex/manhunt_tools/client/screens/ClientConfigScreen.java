@@ -67,7 +67,7 @@ public class ClientConfigScreen extends Screen {
                 30,
                 Component.literal("Show Timer On The Actionbar"),
                 showTimerButton,
-                true
+                false
         );
 
 
