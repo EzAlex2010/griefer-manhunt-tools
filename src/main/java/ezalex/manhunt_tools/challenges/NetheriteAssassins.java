@@ -1,9 +1,6 @@
 package ezalex.manhunt_tools.challenges;
 
-import ezalex.manhunt_tools.ConfigManager;
-import ezalex.manhunt_tools.Manager;
-import ezalex.manhunt_tools.TeamManager;
-import ezalex.manhunt_tools.Timer;
+import ezalex.manhunt_tools.*;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.DataComponents;
@@ -32,6 +29,7 @@ public class NetheriteAssassins implements Challenge {
     }
     @Override
     public void preChallengeTick(MinecraftServer server) {
+        GrieferManhuntTools.LOGGER.info("ticking the pre tick");
         give_items(server);
     }
 

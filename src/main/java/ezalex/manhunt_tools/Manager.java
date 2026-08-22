@@ -30,10 +30,7 @@ public class Manager {
     );
 
     public static Challenge getCurrent() {
-        if (CHALLENGES.get(Manager.challenge) != null) {
-            return CHALLENGES.get(Manager.challenge);
-        }
-        return CHALLENGES.get("classic");
+        return CHALLENGES.getOrDefault(Manager.challenge, CHALLENGES.get("classic"));
     }
 
     public static Timer getTimer() {
