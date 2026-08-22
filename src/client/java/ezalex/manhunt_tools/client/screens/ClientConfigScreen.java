@@ -4,6 +4,7 @@ import ezalex.manhunt_tools.client.ClientConfig;
 import ezalex.manhunt_tools.client.ClientConfigManager;
 import ezalex.manhunt_tools.client.widgets.ConfigButton;
 import ezalex.manhunt_tools.client.widgets.ConfigCheckbox;
+import ezalex.manhunt_tools.client.widgets.ConfigRow;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
@@ -17,8 +18,10 @@ public class ClientConfigScreen extends Screen {
         this.parent = parent;
     }
 
-    private ConfigCheckbox showTimerBox;
-    private ConfigCheckbox showEndScreenBox;
+    private ConfigCheckbox showTimerButton;
+    private ConfigRow showTimerRow;
+    private ConfigCheckbox showEndScreenButton;
+    private ConfigRow showEndScreenRow;
 
     @Override
     protected void init() {
@@ -29,31 +32,51 @@ public class ClientConfigScreen extends Screen {
 
         y = y + 25;
 
-        showEndScreenBox = new ConfigCheckbox(
+        showEndScreenButton = new ConfigCheckbox(
                 this.width / 2,
-                y,
+                0,
                 80,
                 20,
+                ClientConfigManager.get().showEndScreen
+        );
+
+        showEndScreenRow = new ConfigRow(
+                0,
+                y,
+                this.width,
+                30,
                 Component.literal("Show End Screen"),
-                ClientConfigManager.get().showEndScreen,
+                showEndScreenButton,
                 true
         );
 
         y = y + y_space;
 
-        showTimerBox = new ConfigCheckbox(
+        showTimerButton = new ConfigCheckbox(
                 this.width / 2,
                 y,
                 80,
                 20,
-                Component.literal("Show Timer On Actionbar"),
-                ClientConfigManager.get().showTimer,
-                false
+                ClientConfigManager.get().showTimer
+        );
+
+        showTimerRow = new ConfigRow(
+                0,
+                y,
+                this.width,
+                30,
+                Component.literal("Show Timer On The Actionbar"),
+                showTimerButton,
+                true
         );
 
 
-        this.addRenderableWidget(showEndScreenBox);
-        this.addRenderableWidget(showTimerBox);
+        this.addRenderableWidget(showEndScreenButton);
+        this.addRenderableWidget(showTimerButton);
+
+        this.addRenderableWidget(showTimerRow);
+        this.addRenderableWidget(showEndScreenRow);
+
         this.addRenderableWidget(
                 new ConfigButton(
                         this.width / 2 - 120,
@@ -96,8 +119,8 @@ public class ClientConfigScreen extends Screen {
 
     private void save() {
         ClientConfig config = ClientConfigManager.get();
-        config.showEndScreen = showEndScreenBox.isToggled();
-        config.showTimer = showTimerBox.isToggled();
+        config.showEndScreen = showEndScreenButton.isToggled();
+        config.showTimer = showTimerButton.isToggled();
         ClientConfigManager.save();
     }
 }
