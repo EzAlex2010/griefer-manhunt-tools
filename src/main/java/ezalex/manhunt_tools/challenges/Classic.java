@@ -6,12 +6,19 @@ import ezalex.manhunt_tools.Timer;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 
-public class Classic {
-    public static void start(MinecraftServer server) {
+public class Classic implements Challenge {
+    @Override
+    public void start(MinecraftServer server) {
         Manager.getTimer().configureStopwatch();
     }
 
-    public static void tick(MinecraftServer server) {}
+    @Override
+    public void tick(MinecraftServer server) {
 
-    public static void preChallengeTick(MinecraftServer server) {}
+    }
+
+    @Override
+    public void preChallengeTick(MinecraftServer server) {
+
+    }
 }

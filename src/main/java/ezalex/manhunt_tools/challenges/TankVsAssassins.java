@@ -18,20 +18,19 @@ import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
 
-public class TankVsAssassins {
-    public static Timer countdown;
-
-    public static void start(MinecraftServer server) {
+public class TankVsAssassins implements Challenge {
+    @Override
+    public void start(MinecraftServer server) {
         Manager.getTimer().configureCountdown((ConfigManager.get().timerLength * 20L));
     }
-
-    public static void tick(MinecraftServer server) {}
-
-    public static void preChallengeTick(MinecraftServer server) {
+    @Override
+    public void tick(MinecraftServer server) {}
+    @Override
+    public void preChallengeTick(MinecraftServer server) {
         give_items(server);
     }
 
-    private static ItemStack createArmor(Item item, MinecraftServer server, boolean runner) {
+    private ItemStack createArmor(Item item, MinecraftServer server, boolean runner) {
         ItemStack stack = new ItemStack(item);
 
         // Tracking Data
@@ -55,7 +54,7 @@ public class TankVsAssassins {
         return stack;
     }
 
-    private static ItemStack createHunterSword(MinecraftServer server) {
+    private ItemStack createHunterSword(MinecraftServer server) {
         ItemStack stack = new ItemStack(Items.DIAMOND_SWORD);
 
         // Tracking Data
@@ -78,7 +77,7 @@ public class TankVsAssassins {
         return stack;
     }
 
-    public static void give_items(MinecraftServer server) {
+    public void give_items(MinecraftServer server) {
         for (ServerPlayer player : server.getPlayerList().getPlayers()) {
             if (TeamManager.isHunter(player)) {
                 // Armor

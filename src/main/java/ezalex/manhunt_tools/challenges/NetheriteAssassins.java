@@ -21,21 +21,21 @@ import net.minecraft.world.item.enchantment.ItemEnchantments;
 
 import java.util.Set;
 
-public class NetheriteAssassins {
-    public static Timer countdown;
-
-    public static void start(MinecraftServer server) {
+public class NetheriteAssassins implements Challenge {
+    @Override
+    public void start(MinecraftServer server) {
         Manager.getTimer().configureCountdown((ConfigManager.get().timerLength * 20L));
     }
-
-    public static void tick(MinecraftServer server) {
+    @Override
+    public void tick(MinecraftServer server) {
         give_items(server);
     }
-    public static void preChallengeTick(MinecraftServer server) {
+    @Override
+    public void preChallengeTick(MinecraftServer server) {
         give_items(server);
     }
 
-    private static ItemStack createArmor(Item item, MinecraftServer server) {
+    private ItemStack createArmor(Item item, MinecraftServer server) {
         ItemStack stack = new ItemStack(item);
 
         // Tracking Data
@@ -59,7 +59,7 @@ public class NetheriteAssassins {
         return stack;
     }
 
-    private static ItemStack createSword(MinecraftServer server) {
+    private ItemStack createSword(MinecraftServer server) {
         ItemStack stack = new ItemStack(Items.NETHERITE_SWORD);
 
         // Tracking Data
@@ -78,7 +78,7 @@ public class NetheriteAssassins {
         return stack;
     }
 
-    public static void give_items(MinecraftServer server) {
+    public void give_items(MinecraftServer server) {
         for (ServerPlayer player : server.getPlayerList().getPlayers()) {
             if (TeamManager.isHunter(player)) {
                 // Armor

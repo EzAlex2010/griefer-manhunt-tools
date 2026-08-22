@@ -1,9 +1,6 @@
 package ezalex.manhunt_tools;
 
-import ezalex.manhunt_tools.challenges.Classic;
-import ezalex.manhunt_tools.challenges.NetheriteAssassins;
-import ezalex.manhunt_tools.challenges.Survive;
-import ezalex.manhunt_tools.challenges.TankVsAssassins;
+import ezalex.manhunt_tools.challenges.*;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextColor;
 import net.minecraft.network.protocol.game.ClientboundSetActionBarTextPacket;
@@ -13,6 +10,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.dimension.end.EnderDragonFight;
 
+import java.util.Map;
 import java.util.Objects;
 
 public class Manager {
@@ -23,6 +21,17 @@ public class Manager {
     public static MinecraftServer server;
     private static Timer timer = new Timer();
     private static String lastConfigChallenge = "";
+
+    private static final Map<String, Challenge> CHALLENGES = Map.of(
+            "classic", new Classic(),
+            "netherite_assassins", new NetheriteAssassins(),
+            "tva", new TankVsAssassins(),
+            "survive", new Survive()
+    );
+
+    public static Challenge getCurrent() {
+        return CHALLENGES.get(Manager.challenge);
+    }
 
     public static Timer getTimer() {
         return timer;
@@ -52,20 +61,7 @@ public class Manager {
         GrieferManhuntTools.LOGGER.info("Starting Game");
         ConfigManager.setRules();
         Manager.challenge = ConfigManager.get().challenge;
-        switch (Manager.challenge) {
-            case "classic" -> {
-                Classic.start(server);
-            }
-            case "netherite_assassins" -> {
-                NetheriteAssassins.start(server);
-            }
-            case "tva" -> {
-                TankVsAssassins.start(server);
-            }
-            case "survive" -> {
-                Survive.start(server);
-            }
-        }
+        getCurrent().start(server);
         Manager.challengeRunning = true;
         GameData.save(server);
         for (ServerPlayer player : server.getPlayerList().getPlayers()) {
@@ -111,20 +107,7 @@ public class Manager {
 
             }
         } else {
-            switch (configuredChallenge) {
-                case "classic" -> {
-                    Classic.preChallengeTick(server);
-                }
-                case "netherite_assassins" -> {
-                    NetheriteAssassins.preChallengeTick(server);
-                }
-                case "tva" -> {
-                    TankVsAssassins.preChallengeTick(server);
-                }
-                case "survive" -> {
-                    Survive.preChallengeTick(server);
-                }
-            }
+            getCurrent().preChallengeTick(server);
         }
     }
 
@@ -140,20 +123,7 @@ public class Manager {
         for (ServerPlayer player : server.getPlayerList().getPlayers()) {
             timer.showTo(player);
         }
-        switch (challenge) {
-            case "classic" -> {
-                Classic.tick(server);
-            }
-            case "netherite_assassins" -> {
-                NetheriteAssassins.tick(server);
-            }
-            case "tva" -> {
-                TankVsAssassins.tick(server);
-            }
-            case "survive" -> {
-                Survive.tick(server);
-            }
-        }
+        getCurrent().tick(server);
     }
 
     public static void timerDone() {
