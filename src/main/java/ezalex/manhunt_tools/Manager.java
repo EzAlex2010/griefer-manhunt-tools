@@ -30,7 +30,19 @@ public class Manager {
     );
 
     public static Challenge getCurrent() {
-        return CHALLENGES.getOrDefault(Manager.challenge, CHALLENGES.get("classic"));
+        Challenge current = null;
+        if (challengeRunning) {
+            current = CHALLENGES.get(Manager.challenge);
+        } else {
+            current = CHALLENGES.get(ConfigManager.get().challenge);
+        }
+
+        if (current == null) {
+            GrieferManhuntTools.LOGGER.warn("Unknown challenge, defaulting to classic");
+            return CHALLENGES.get("classic");
+        }
+
+        return current;
     }
 
     public static Timer getTimer() {
@@ -61,8 +73,8 @@ public class Manager {
         GrieferManhuntTools.LOGGER.info("Starting Game");
         ConfigManager.setRules();
         Manager.challenge = ConfigManager.get().challenge;
-        getCurrent().start(server);
         Manager.challengeRunning = true;
+        getCurrent().start(server);
         GameData.save(server);
         for (ServerPlayer player : server.getPlayerList().getPlayers()) {
             player.setExperiencePoints(0);

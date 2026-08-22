@@ -29,7 +29,6 @@ public class NetheriteAssassins implements Challenge {
     }
     @Override
     public void preChallengeTick(MinecraftServer server) {
-        GrieferManhuntTools.LOGGER.info("ticking the pre tick");
         give_items(server);
     }
 

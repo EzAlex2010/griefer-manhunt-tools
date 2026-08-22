@@ -164,6 +164,7 @@ public class ChallengeScreen extends Screen {
 
     public void selectChallenge() {
         ServerConfigCopy.get().challenge = selected_challenge;
+        GrieferManhuntToolsClient.LOGGER.info("Challenge changed to: " + ServerConfigCopy.get().challenge);
     }
 
     @Override
