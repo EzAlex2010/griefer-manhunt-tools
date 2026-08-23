@@ -21,7 +21,9 @@ public class TeamManager {
                 return runner;
             }
         }
-        GrieferManhuntTools.LOGGER.error("No player is on the runner team!");
+        if (validRunnerFound) {
+            GrieferManhuntTools.LOGGER.error("No player is on the runner team!"); // Print only once
+        }
         validRunnerFound = false;
         return null;
     }
