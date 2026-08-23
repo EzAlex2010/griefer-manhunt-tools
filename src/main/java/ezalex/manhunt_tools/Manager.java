@@ -26,7 +26,8 @@ public class Manager {
             "classic", new Classic(),
             "netherite_assassins", new NetheriteAssassins(),
             "tva", new TankVsAssassins(),
-            "survive", new Survive()
+            "survive", new Survive(),
+            "timed", new Timed()
     );
 
     public static Challenge getCurrent() {
@@ -55,6 +56,7 @@ public class Manager {
 
     public static void setServer(MinecraftServer serverinstance) {
         server = serverinstance;
+        ConfigManager.setRules();
     }
 
     public static MinecraftServer getServer() {

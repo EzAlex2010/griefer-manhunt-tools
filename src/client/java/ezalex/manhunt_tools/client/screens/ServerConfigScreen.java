@@ -246,25 +246,6 @@ public class ServerConfigScreen extends Screen {
                 true
         );
 
-        this.addRenderableWidget(selectChallengeButton);
-        this.addRenderableWidget(compassIntervalBox);
-        this.addRenderableWidget(showTeamColorsButton);
-        this.addRenderableWidget(giveHuntersCompassButton);
-        this.addRenderableWidget(hunterFriendlyFireButton);
-        this.addRenderableWidget(TimeBox);
-        this.addRenderableWidget(keepInventoryButton);
-        this.addRenderableWidget(worldBorderSizeBox);
-        this.addRenderableWidget(locatorBarButton);
-
-        this.addRenderableWidget(compassIntervalRow);
-        this.addRenderableWidget(showTeamColorsRow);
-        this.addRenderableWidget(giveHuntersCompassRow);
-        this.addRenderableWidget(hunterFriendlyFireRow);
-        this.addRenderableWidget(TimeRow);
-        this.addRenderableWidget(keepInventoryRow);
-        this.addRenderableWidget(worldBorderSizeRow);
-        this.addRenderableWidget(locatorBarRow);
-
         saveButton = new ConfigButton(
                 this.width / 2 - 140,
                 this.height - 30,
@@ -284,6 +265,24 @@ public class ServerConfigScreen extends Screen {
 
         this.addRenderableWidget(saveButton);
         this.addRenderableWidget(closeButton);
+        this.addRenderableWidget(selectChallengeButton);
+        this.addRenderableWidget(compassIntervalBox);
+        this.addRenderableWidget(showTeamColorsButton);
+        this.addRenderableWidget(giveHuntersCompassButton);
+        this.addRenderableWidget(hunterFriendlyFireButton);
+        this.addRenderableWidget(TimeBox);
+        this.addRenderableWidget(keepInventoryButton);
+        this.addRenderableWidget(worldBorderSizeBox);
+        this.addRenderableWidget(locatorBarButton);
+
+        this.addRenderableWidget(compassIntervalRow);
+        this.addRenderableWidget(showTeamColorsRow);
+        this.addRenderableWidget(giveHuntersCompassRow);
+        this.addRenderableWidget(hunterFriendlyFireRow);
+        this.addRenderableWidget(TimeRow);
+        this.addRenderableWidget(keepInventoryRow);
+        this.addRenderableWidget(worldBorderSizeRow);
+        this.addRenderableWidget(locatorBarRow);
     }
 
     @Override

@@ -117,7 +117,7 @@ public class GrieferManhuntTools implements ModInitializer {
 
 			if (TeamManager.isHunter(target) && TeamManager.isRunner(attacker) && !Manager.challengeRunning) {
 				Manager.start(attacker.level().getServer());
-				return InteractionResult.SUCCESS;
+				return InteractionResult.PASS;
 			}
 			return InteractionResult.PASS;
 		});
