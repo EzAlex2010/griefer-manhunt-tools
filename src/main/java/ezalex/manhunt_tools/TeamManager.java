@@ -18,6 +18,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
+import static ezalex.manhunt_tools.Manager.server;
+
 public class TeamManager {
     public static boolean validRunnerFound = false;
     private static final Path RUNNER_PATH = Path.of("config", "griefer-manhunt-tools-team-runners.json");
@@ -78,6 +80,8 @@ public class TeamManager {
         } catch (Exception e) {
             GrieferManhuntTools.LOGGER.error("Failed to load team hunter", e);
         }
+        GrieferManhuntTools.LOGGER.error("Loaded teams successfully!");
+        updateTeamConfigs(server);
     }
 
     public static void saveTeams() {
@@ -147,13 +151,13 @@ public class TeamManager {
     }
 
     public static void addRunner(UUID uuid) {
-        hunters.remove(uuid);
+        removePlayer(uuid);
         runners.add(uuid);
         saveTeams();
     }
 
     public static void addHunter(UUID uuid) {
-        runners.remove(uuid);
+        removePlayer(uuid);
         hunters.add(uuid);
         saveTeams();
     }

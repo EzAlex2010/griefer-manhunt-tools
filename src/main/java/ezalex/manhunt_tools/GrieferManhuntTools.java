@@ -32,8 +32,6 @@ public class GrieferManhuntTools implements ModInitializer {
 	public void onInitialize() {
 		ManhuntCommands.register();
 
-		ServerLifecycleEvents.SERVER_STARTED.register(GameData::load);
-
 		PayloadTypeRegistry.clientboundPlay().register(
 				OpenChallengeScreenPayload.TYPE,
 				OpenChallengeScreenPayload.CODEC
@@ -145,6 +143,7 @@ public class GrieferManhuntTools implements ModInitializer {
 		});
 
 		ServerLifecycleEvents.SERVER_STARTED.register(Manager::setServer);
+		ServerLifecycleEvents.SERVER_STARTED.register(GameData::load);
 	}
 
 	public static Identifier id(String path) {
