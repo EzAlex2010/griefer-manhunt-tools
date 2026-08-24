@@ -32,7 +32,7 @@ public class GrieferManhuntTools implements ModInitializer {
 	public void onInitialize() {
 		ManhuntCommands.register();
 
-		ServerLifecycleEvents.SERVER_STARTING.register(GameData::load);
+		ServerLifecycleEvents.SERVER_STARTED.register(GameData::load);
 
 		PayloadTypeRegistry.clientboundPlay().register(
 				OpenChallengeScreenPayload.TYPE,

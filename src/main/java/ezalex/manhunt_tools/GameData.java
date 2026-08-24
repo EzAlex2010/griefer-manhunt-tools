@@ -30,6 +30,8 @@ public class GameData {
         Manager.server = inputServer;
         Timer timer = Manager.getTimer();
         ConfigManager.load();
+        TeamManager.loadTeams();
+        ConfigManager.setRules();
         Manager.UPDATE_INTERVAL = ConfigManager.get().compassUpdateInterval;
         Path file = Manager.server.getWorldPath(net.minecraft.world.level.storage.LevelResource.ROOT).resolve("challengeData.txt");
         if (Files.exists(file)) {

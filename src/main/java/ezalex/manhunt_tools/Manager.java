@@ -56,7 +56,6 @@ public class Manager {
 
     public static void setServer(MinecraftServer serverinstance) {
         server = serverinstance;
-        ConfigManager.setRules();
     }
 
     public static MinecraftServer getServer() {
