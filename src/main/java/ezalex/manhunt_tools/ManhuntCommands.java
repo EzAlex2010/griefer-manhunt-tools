@@ -103,6 +103,7 @@ public class ManhuntCommands {
             return 0;
         }
         scoreboard.addPlayerToTeam(player.getScoreboardName(), hunter);
+        TeamManager.addHunter(player.getUUID());
         context.getSource().sendSuccess(() -> Component.literal("You are now a hunter."), false);
         return 1;
     }
@@ -121,6 +122,7 @@ public class ManhuntCommands {
             return 0;
         }
         scoreboard.addPlayerToTeam(player.getScoreboardName(), runner);
+        TeamManager.addRunner(player.getUUID());
         context.getSource().sendSuccess(() -> Component.literal("You are now the runner."), false);
         return 1;
     }
@@ -141,6 +143,7 @@ public class ManhuntCommands {
         ServerScoreboard scoreboard = context.getSource().getServer().getScoreboard();
         scoreboard.removePlayerFromTeam(player.getScoreboardName());
         context.getSource().sendSuccess(() -> Component.literal("You have left the game"), false);
+        TeamManager.removePlayer(player.getUUID());
         return 1;
     }
 

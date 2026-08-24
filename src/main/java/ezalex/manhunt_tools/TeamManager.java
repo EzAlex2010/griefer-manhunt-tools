@@ -1,5 +1,7 @@
 package ezalex.manhunt_tools;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.ServerScoreboard;
 import net.minecraft.server.level.ServerPlayer;
@@ -7,10 +9,23 @@ import net.minecraft.world.scores.PlayerTeam;
 import net.minecraft.world.scores.TeamColor;
 import org.apache.logging.log4j.core.jmx.Server;
 
+import java.io.Reader;
+import java.io.Writer;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 
 public class TeamManager {
     public static boolean validRunnerFound = false;
+    private static final Path RUNNER_PATH = Path.of("config", "griefer-manhunt-tools-team-runners.json");
+    private static final Path HUNTER_PATH = Path.of("config", "griefer-manhunt-tools-team-hunters.json");
+    private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
+
+    private static Set<UUID> runners = new HashSet<>();
+    private static Set<UUID> hunters = new HashSet<>();
 
     public static ServerPlayer getRunner(MinecraftServer server) {
         ServerPlayer runner;
@@ -21,9 +36,72 @@ public class TeamManager {
                 return runner;
             }
         }
-        GrieferManhuntTools.LOGGER.error("No player is on the runner team!");
+        if (validRunnerFound) {
+            GrieferManhuntTools.LOGGER.error("No player is on the runner team!"); // Only Print on first fail
+        }
         validRunnerFound = false;
         return null;
+    }
+
+    public static void loadTeams() {
+        try {
+            Files.createDirectories(RUNNER_PATH.getParent());
+
+            if (!Files.exists(RUNNER_PATH)) {
+                return;
+            }
+
+            try (Reader reader = Files.newBufferedReader(RUNNER_PATH)) {
+                runners = GSON.fromJson(reader, Set.class);
+                if (runners == null) {
+                    new HashSet<>();
+                }
+            }
+
+        } catch (Exception e) {
+            GrieferManhuntTools.LOGGER.error("Failed to load team runner", e);
+        }
+        try {
+            Files.createDirectories(HUNTER_PATH.getParent());
+
+            if (!Files.exists(HUNTER_PATH)) {
+                return;
+            }
+
+            try (Reader reader = Files.newBufferedReader(HUNTER_PATH)) {
+                hunters = GSON.fromJson(reader, Set.class);
+                if (hunters == null) {
+                    new HashSet<>();
+                }
+            }
+
+        } catch (Exception e) {
+            GrieferManhuntTools.LOGGER.error("Failed to load team hunter", e);
+        }
+    }
+
+    public static void saveTeams() {
+        try {
+            Files.createDirectories(RUNNER_PATH.getParent());
+
+            try (Writer writer = Files.newBufferedWriter(RUNNER_PATH)) {
+                GSON.toJson(runners, writer);
+            }
+
+        } catch (Exception e) {
+            GrieferManhuntTools.LOGGER.error("Failed to save runner team", e);
+        }
+
+        try {
+            Files.createDirectories(HUNTER_PATH.getParent());
+
+            try (Writer writer = Files.newBufferedWriter(HUNTER_PATH)) {
+                GSON.toJson(hunters, writer);
+            }
+
+        } catch (Exception e) {
+            GrieferManhuntTools.LOGGER.error("Failed to save hunter team", e);
+        }
     }
 
     public static void createTeams(ServerScoreboard scoreboard) {
@@ -66,5 +144,23 @@ public class TeamManager {
 
     public static boolean isHunter(ServerPlayer player) {
         return player.getTeam() != null && player.getTeam().getName().equals("hunter");
+    }
+
+    public static void addRunner(UUID uuid) {
+        hunters.remove(uuid);
+        runners.add(uuid);
+        saveTeams();
+    }
+
+    public static void addHunter(UUID uuid) {
+        runners.remove(uuid);
+        hunters.add(uuid);
+        saveTeams();
+    }
+
+    public static void removePlayer(UUID uuid) {
+        runners.remove(uuid);
+        hunters.remove(uuid);
+        saveTeams();
     }
 }
