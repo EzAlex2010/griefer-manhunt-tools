@@ -7,14 +7,13 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.permissions.Permissions;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
-import net.minecraft.world.scores.Team;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,42 +30,34 @@ public class GrieferManhuntTools implements ModInitializer {
 	@Override
 	public void onInitialize() {
 		ManhuntCommands.register();
-
 		PayloadTypeRegistry.clientboundPlay().register(
 				OpenChallengeScreenPayload.TYPE,
 				OpenChallengeScreenPayload.CODEC
 		);
-
 		PayloadTypeRegistry.clientboundPlay().register(
 				ConfigDataPayload.TYPE,
 				ConfigDataPayload.CODEC
 		);
-
 		PayloadTypeRegistry.serverboundPlay().register(
 				SetChallengePayload.TYPE,
 				SetChallengePayload.CODEC
 		);
-
 		PayloadTypeRegistry.serverboundPlay().register(
 				SaveConfigPayload.TYPE,
 				SaveConfigPayload.CODEC
 		);
-
 		PayloadTypeRegistry.serverboundPlay().register(
 				RequestConfigPayload.TYPE,
 				RequestConfigPayload.CODEC
 		);
-
 		PayloadTypeRegistry.clientboundPlay().register(
 				EndScreenPayload.TYPE,
 				EndScreenPayload.CODEC
 		);
-
 		PayloadTypeRegistry.clientboundPlay().register(
 				TimerDisplayPayload.TYPE,
 				TimerDisplayPayload.CODEC
 		);
-
 		ServerPlayNetworking.registerGlobalReceiver(
 				SetChallengePayload.TYPE,
 				(payload, context) -> {
@@ -77,7 +68,6 @@ public class GrieferManhuntTools implements ModInitializer {
 					LOGGER.info("Challenge set to {}", payload.challenge());
 				}
 		);
-
 		ServerPlayNetworking.registerGlobalReceiver(
 				SaveConfigPayload.TYPE,
 				(payload, context) -> {
@@ -89,7 +79,6 @@ public class GrieferManhuntTools implements ModInitializer {
 					ConfigManager.save();
 				}
 		);
-
 		ServerPlayNetworking.registerGlobalReceiver(
 				RequestConfigPayload.TYPE,
 				(payload, context) -> {
@@ -103,7 +92,6 @@ public class GrieferManhuntTools implements ModInitializer {
 					);
 				}
 		);
-
 		AttackEntityCallback.EVENT.register((player, world, hand, entity, hitResult) -> {
 			if (!(player instanceof ServerPlayer attacker)) {
 				return InteractionResult.PASS;
@@ -119,16 +107,12 @@ public class GrieferManhuntTools implements ModInitializer {
 			}
 			return InteractionResult.PASS;
 		});
-
 		ServerTickEvents.END_SERVER_TICK.register(Manager::tick);
-
 		ServerLifecycleEvents.SERVER_STOPPING.register(GameData::save);
 		ServerLifecycleEvents.SERVER_STOPPED.register(Manager::stopServer);
-
 		ServerLifecycleEvents.BEFORE_SAVE.register((server, flush, force) -> {
 			GameData.save(server);
 		});
-
 		ServerLivingEntityEvents.AFTER_DEATH.register((entity, damageSource) -> {
 			if (entity instanceof ServerPlayer player) {
 				if (TeamManager.isRunner(player)) {
@@ -141,9 +125,12 @@ public class GrieferManhuntTools implements ModInitializer {
 
 			}
 		});
-
 		ServerLifecycleEvents.SERVER_STARTED.register(Manager::setServer);
 		ServerLifecycleEvents.SERVER_STARTED.register(GameData::load);
+		ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
+			ServerPlayer player = handler.getPlayer();
+            TeamManager.onPlayerJoin(player);
+		});
 	}
 
 	public static Identifier id(String path) {

@@ -80,8 +80,8 @@ public class TeamManager {
         } catch (Exception e) {
             GrieferManhuntTools.LOGGER.error("Failed to load team hunter", e);
         }
-        GrieferManhuntTools.LOGGER.error("Loaded teams successfully!");
-        updateTeamConfigs(server);
+        GrieferManhuntTools.LOGGER.info("Loaded teams successfully!");
+        updateTeamConfigs();
     }
 
     public static void saveTeams() {
@@ -120,7 +120,7 @@ public class TeamManager {
         }
     }
 
-    public static void updateTeamConfigs(MinecraftServer server) {
+    public static void updateTeamConfigs() {
         ServerScoreboard scoreboard = server.getScoreboard();
         PlayerTeam runner = scoreboard.getPlayerTeam("runner");
         PlayerTeam hunters = scoreboard.getPlayerTeam("hunter");
@@ -139,6 +139,22 @@ public class TeamManager {
             }
         } else {
             createTeams(scoreboard);
+        }
+    }
+
+    public static void onPlayerJoin(ServerPlayer player) {
+        ServerScoreboard scoreboard = server.getScoreboard();
+        PlayerTeam runnerTeam = scoreboard.getPlayerTeam("runner");
+        PlayerTeam hunterTeam = scoreboard.getPlayerTeam("hunter");
+        UUID uuid = player.getUUID();
+        if (runnerTeam == null || hunterTeam == null) {
+            GrieferManhuntTools.LOGGER.error("Failed to load teams!");
+            return;
+        }
+        if (runners.contains(uuid)) {
+            scoreboard.addPlayerToTeam(player.getScoreboardName(), runnerTeam);
+        } else if (hunters.contains(uuid)) {
+            scoreboard.addPlayerToTeam(player.getScoreboardName(), hunterTeam);
         }
     }
 
