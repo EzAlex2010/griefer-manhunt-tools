@@ -1,9 +1,6 @@
 package ezalex.manhunt_tools.challenges;
 
-import ezalex.manhunt_tools.ConfigManager;
-import ezalex.manhunt_tools.Manager;
-import ezalex.manhunt_tools.TeamManager;
-import ezalex.manhunt_tools.Timer;
+import ezalex.manhunt_tools.*;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
@@ -28,6 +25,16 @@ public class TankVsAssassins implements Challenge {
     @Override
     public void preChallengeTick(MinecraftServer server) {
         give_items(server);
+    }
+
+    @Override
+    public void timerDone(MinecraftServer server) {
+        GameDisplay.runnerWin(server);
+    }
+
+    @Override
+    public void onRunnerDeath(MinecraftServer server) {
+        GameDisplay.hunterWin(server);
     }
 
     private ItemStack createArmor(Item item, MinecraftServer server, boolean runner) {

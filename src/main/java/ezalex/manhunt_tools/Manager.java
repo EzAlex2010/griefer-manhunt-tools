@@ -140,29 +140,12 @@ public class Manager {
     }
 
     public static void timerDone() {
-        switch (challenge) {
-            case "classic" -> {
-
-            }
-            case "netherite_assassins" -> {
-                GameDisplay.hunterWin(server);
-            }
-            case "tva", "survive" -> {
-                GameDisplay.runnerWin(server);
-            }
-        }
+        getCurrent().timerDone(server);
     }
 
     public static void runnerDeath(MinecraftServer server) {
         GrieferManhuntTools.LOGGER.info("Runner Died");
-        switch (challenge) {
-            case "classic", "tva", "survive" -> {
-                GameDisplay.hunterWin(server);
-            }
-            case "netherite_assassins" -> {
-                // score system later maybe?
-            }
-        }
+        getCurrent().onRunnerDeath(server);
     }
 
     public static void clearInventories(MinecraftServer server) {

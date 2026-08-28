@@ -6,4 +6,6 @@ public interface Challenge {
     void start(MinecraftServer server);
     void tick(MinecraftServer server);
     void preChallengeTick(MinecraftServer server);
+    void timerDone(MinecraftServer server);
+    void onRunnerDeath(MinecraftServer server);
 }

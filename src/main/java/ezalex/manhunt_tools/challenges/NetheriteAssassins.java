@@ -32,6 +32,16 @@ public class NetheriteAssassins implements Challenge {
         give_items(server);
     }
 
+    @Override
+    public void timerDone(MinecraftServer server) {
+        GameDisplay.hunterWin(server);
+    }
+
+    @Override
+    public void onRunnerDeath(MinecraftServer server) {
+
+    }
+
     private ItemStack createArmor(Item item, MinecraftServer server) {
         ItemStack stack = new ItemStack(item);
 

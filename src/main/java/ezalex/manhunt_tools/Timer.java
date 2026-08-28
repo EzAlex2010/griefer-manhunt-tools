@@ -79,6 +79,10 @@ public class Timer {
         this.mode = mode;
     }
 
+    public void addTime(Long ticks) {
+        this.ticks += ticks;
+    }
+
     public String getFormattedTime() {
         int totalSeconds = Math.toIntExact((ticks / 20));
 

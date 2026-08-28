@@ -1,6 +1,7 @@
 package ezalex.manhunt_tools.challenges;
 
 import ezalex.manhunt_tools.ConfigManager;
+import ezalex.manhunt_tools.GameDisplay;
 import ezalex.manhunt_tools.Manager;
 import ezalex.manhunt_tools.Timer;
 import net.minecraft.server.MinecraftServer;
@@ -20,5 +21,15 @@ public class Classic implements Challenge {
     @Override
     public void preChallengeTick(MinecraftServer server) {
 
+    }
+
+    @Override
+    public void timerDone(MinecraftServer server) {
+
+    }
+
+    @Override
+    public void onRunnerDeath(MinecraftServer server) {
+        GameDisplay.hunterWin(server);
     }
 }
