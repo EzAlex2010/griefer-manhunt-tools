@@ -66,7 +66,7 @@ public class ConfigManager {
     }
 
     public static void setRules() {
-        TeamManager.updateTeamConfigs(server);
+        TeamManager.updateTeamConfigs();
         server.overworld().getWorldBorder().setSize(config.worldBoarderSize);
         GameRules gamerules = server.getGameRules();
         gamerules.set(GameRules.KEEP_INVENTORY, config.keepInventory, server);

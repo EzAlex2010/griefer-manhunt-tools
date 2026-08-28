@@ -1,16 +1,35 @@
 package ezalex.manhunt_tools;
 
+import com.google.common.reflect.TypeToken;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.ServerScoreboard;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.scores.PlayerTeam;
 import net.minecraft.world.scores.TeamColor;
-import org.apache.logging.log4j.core.jmx.Server;
 
+import java.io.Reader;
+import java.io.Writer;
+import java.lang.reflect.Type;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
+
+import static ezalex.manhunt_tools.Manager.server;
 
 public class TeamManager {
     public static boolean validRunnerFound = false;
+    private static final Path RUNNER_PATH = Path.of("config", "griefer-manhunt-tools-team-runners.json");
+    private static final Path HUNTER_PATH = Path.of("config", "griefer-manhunt-tools-team-hunters.json");
+    private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
+    private static final Type UUID_SET_TYPE = new TypeToken<Set<UUID>>() {}.getType();
+
+    private static Set<UUID> runners = new HashSet<>();
+    private static Set<UUID> hunters = new HashSet<>();
 
     public static ServerPlayer getRunner(MinecraftServer server) {
         ServerPlayer runner;
@@ -22,10 +41,65 @@ public class TeamManager {
             }
         }
         if (validRunnerFound) {
-            GrieferManhuntTools.LOGGER.error("No player is on the runner team!"); // Print only once
+            GrieferManhuntTools.LOGGER.error("No player is on the runner team!"); // Only Print on first fail
         }
         validRunnerFound = false;
         return null;
+    }
+
+    public static void loadTeams() {
+        try {
+            Files.createDirectories(RUNNER_PATH.getParent());
+            if (Files.exists(RUNNER_PATH)) {
+                try (Reader reader = Files.newBufferedReader(RUNNER_PATH)) {
+                    runners = GSON.fromJson(reader, UUID_SET_TYPE);
+                    if (runners == null) {
+                        runners = new HashSet<>();
+                    }
+                }
+            }
+        } catch (Exception e) {
+            GrieferManhuntTools.LOGGER.error("Failed to load team runner", e);
+        }
+        try {
+            Files.createDirectories(HUNTER_PATH.getParent());
+            if (Files.exists(HUNTER_PATH)) {
+                try (Reader reader = Files.newBufferedReader(HUNTER_PATH)) {
+                    hunters = GSON.fromJson(reader, UUID_SET_TYPE);
+                    if (hunters == null) {
+                        hunters = new HashSet<>();
+                    }
+                }
+            }
+        } catch (Exception e) {
+            GrieferManhuntTools.LOGGER.error("Failed to load team hunter", e);
+        }
+        GrieferManhuntTools.LOGGER.info("Loaded teams successfully!");
+        updateTeamConfigs();
+    }
+
+    public static void saveTeams() {
+        try {
+            Files.createDirectories(RUNNER_PATH.getParent());
+
+            try (Writer writer = Files.newBufferedWriter(RUNNER_PATH)) {
+                GSON.toJson(runners, writer);
+            }
+
+        } catch (Exception e) {
+            GrieferManhuntTools.LOGGER.error("Failed to save runner team", e);
+        }
+
+        try {
+            Files.createDirectories(HUNTER_PATH.getParent());
+
+            try (Writer writer = Files.newBufferedWriter(HUNTER_PATH)) {
+                GSON.toJson(hunters, writer);
+            }
+
+        } catch (Exception e) {
+            GrieferManhuntTools.LOGGER.error("Failed to save hunter team", e);
+        }
     }
 
     public static void createTeams(ServerScoreboard scoreboard) {
@@ -40,7 +114,7 @@ public class TeamManager {
         }
     }
 
-    public static void updateTeamConfigs(MinecraftServer server) {
+    public static void updateTeamConfigs() {
         ServerScoreboard scoreboard = server.getScoreboard();
         PlayerTeam runner = scoreboard.getPlayerTeam("runner");
         PlayerTeam hunters = scoreboard.getPlayerTeam("hunter");
@@ -62,11 +136,47 @@ public class TeamManager {
         }
     }
 
+    public static void onPlayerJoin(ServerPlayer player) {
+        ServerScoreboard scoreboard = server.getScoreboard();
+        PlayerTeam runnerTeam = scoreboard.getPlayerTeam("runner");
+        PlayerTeam hunterTeam = scoreboard.getPlayerTeam("hunter");
+        UUID uuid = player.getUUID();
+        if (runnerTeam == null || hunterTeam == null) {
+            GrieferManhuntTools.LOGGER.error("Failed to load teams!");
+            return;
+        }
+        if (runners.contains(uuid)) {
+            scoreboard.addPlayerToTeam(player.getScoreboardName(), runnerTeam);
+            GrieferManhuntTools.LOGGER.info("Added Player to runner team.");
+        } else if (hunters.contains(uuid)) {
+            scoreboard.addPlayerToTeam(player.getScoreboardName(), hunterTeam);
+            GrieferManhuntTools.LOGGER.info("Added Player to hunter team.");
+        }
+    }
+
     public static boolean isRunner(ServerPlayer player) {
         return player.getTeam() != null && player.getTeam().getName().equals("runner");
     }
 
     public static boolean isHunter(ServerPlayer player) {
         return player.getTeam() != null && player.getTeam().getName().equals("hunter");
+    }
+
+    public static void addRunner(UUID uuid) {
+        removePlayer(uuid);
+        runners.add(uuid);
+        saveTeams();
+    }
+
+    public static void addHunter(UUID uuid) {
+        removePlayer(uuid);
+        hunters.add(uuid);
+        saveTeams();
+    }
+
+    public static void removePlayer(UUID uuid) {
+        runners.remove(uuid);
+        hunters.remove(uuid);
+        saveTeams();
     }
 }
