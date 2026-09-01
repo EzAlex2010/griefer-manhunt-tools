@@ -8,22 +8,27 @@ import java.nio.file.Path;
 
 public class GameData {
     public static void save(MinecraftServer server) {
-        Timer timer = Manager.getTimer();
-        GrieferManhuntTools.LOGGER.info(
-                "SAVE: saving challengeRunning={}, challenge={}, mode={}, ticks={}, initialTicks={}",
-                Manager.challengeRunning,
-                Manager.challenge,
-                timer.getMode(),
-                timer.getTicks(),
-                timer.getInitialTicks()
-        );
-        Path file = server.getWorldPath(net.minecraft.world.level.storage.LevelResource.ROOT).resolve("challengeData.txt");
-        String data = (Manager.challengeRunning ? "1" : "0") + "|" + Manager.challenge + "|" + (timer.getMode().toString()) + "|" + timer.getTicks() + "|" + timer.getInitialTicks();
-        try {
-            Files.writeString(file, data);
-        } catch (IOException e) {
-            GrieferManhuntTools.LOGGER.error("Failed to save challenge data", e);
+        if (Manager.challengeRunning) {
+            Timer timer = Manager.getTimer();
+            GrieferManhuntTools.LOGGER.info(
+                    "SAVE: saving challengeRunning={}, challenge={}, mode={}, ticks={}, initialTicks={}",
+                    Manager.challengeRunning,
+                    Manager.challenge,
+                    timer.getMode(),
+                    timer.getTicks(),
+                    timer.getInitialTicks()
+            );
+            Path file = server.getWorldPath(net.minecraft.world.level.storage.LevelResource.ROOT).resolve("challengeData.txt");
+            String data = (Manager.challengeRunning ? "1" : "0") + "|" + Manager.challenge + "|" + (timer.getMode().toString()) + "|" + timer.getTicks() + "|" + timer.getInitialTicks();
+            try {
+                Files.writeString(file, data);
+            } catch (IOException e) {
+                GrieferManhuntTools.LOGGER.error("Failed to save challenge data", e);
+            }
+        } else {
+            GrieferManhuntTools.LOGGER.info("Not saving challenge data, no data to save");
         }
+
     }
 
     public static void load(MinecraftServer inputServer) {
