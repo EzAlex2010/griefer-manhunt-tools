@@ -80,6 +80,7 @@ public class Compass {
     public static void clear(ServerPlayer player) {
         player.getInventory().clearOrCountMatchingItems(
                 Compass::isTrackingCompass,
+                false,
                 Integer.MAX_VALUE,    // remove all matching items
                 player.inventoryMenu.getCraftSlots()
         );

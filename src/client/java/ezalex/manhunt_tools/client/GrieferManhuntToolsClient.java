@@ -14,7 +14,7 @@ import com.mojang.blaze3d.platform.InputConstants;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
-import org.lwjgl.glfw.GLFW;
+import com.mojang.blaze3d.platform.TextInputManager;
 
 import net.minecraft.client.KeyMapping;
 import net.minecraft.resources.Identifier;
@@ -100,8 +100,8 @@ public class GrieferManhuntToolsClient implements ClientModInitializer{
 	KeyMapping openConfigScreen = KeyMappingHelper.registerKeyMapping(
 			new KeyMapping(
 					"key.griefer-manhunt-tools.open_config_screen",
-					InputConstants.Type.KEYSYM,
-					GLFW.GLFW_KEY_HOME,
+					InputConstants.Type.KEYBOARD,
+					InputConstants.KEY_HOME,
 					this.CATEGORY
 			)
 	);
@@ -109,8 +109,8 @@ public class GrieferManhuntToolsClient implements ClientModInitializer{
 	KeyMapping toggleTimerDisplay = KeyMappingHelper.registerKeyMapping(
 			new KeyMapping(
 					"key.griefer-manhunt-tools.toggle_timer",
-					InputConstants.Type.KEYSYM,
-					GLFW.GLFW_KEY_INSERT,
+					InputConstants.Type.KEYBOARD,
+					InputConstants.KEY_INSERT,
 					this.CATEGORY
 			)
 	);
